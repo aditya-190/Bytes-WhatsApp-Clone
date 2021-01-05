@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".welcome.PhoneLoginActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.38" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.62" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/progressBar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/loader"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@id/guideline2"
+        app:layout_constraintStart_toStartOf="@id/guideline1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/login_heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="@string/heading_phone_number"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/guideline2"
+        app:layout_constraintStart_toStartOf="@id/guideline1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/login_more"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/content_description_more_button"
+        android:src="@drawable/icon_more"
+        app:layout_constraintBottom_toBottomOf="@id/login_heading"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/login_heading"
+        app:tint="@color/colorPrimary" />
+
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:enabled="false"
+        android:text="@string/button_next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guideline4"
+        app:layout_constraintStart_toStartOf="@id/guideline3" />
+
+    <!-- Phone Starts-->
+    <TextView
+        android:id="@+id/login_sub_heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/verify_number"
+        android:textSize="16sp"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_heading" />
+
+    <Spinner
+        android:id="@+id/country_selector"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/gray"
+        app:layout_constraintEnd_toEndOf="@id/guideline2"
+        app:layout_constraintStart_toStartOf="@id/guideline1"
+        app:layout_constraintTop_toBottomOf="@id/login_sub_heading" />
+
+    <TextView
+        android:id="@+id/country_code"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:background="?editTextBackground"
+        android:backgroundTint="@color/gray"
+        android:hint="@string/default_country_code"
+        android:textAlignment="viewEnd"
+        android:textColor="@color/gray"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@id/country_selector"
+        app:layout_constraintTop_toBottomOf="@id/country_selector" />
+
+    <EditText
+        android:id="@+id/phone_number"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:autofillHints="phone number"
+        android:backgroundTint="@color/gray"
+        android:hint="@string/phone_number"
+        android:imeOptions="actionDone"
+        android:inputType="phone"
+        android:maxLength="10"
+        android:textColor="@color/black"
+        android:textColorHint="@color/light_gray"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="@id/country_code"
+        app:layout_constraintEnd_toEndOf="@id/country_selector"
+        app:layout_constraintStart_toEndOf="@id/country_code"
+        app:layout_constraintTop_toTopOf="@id/country_code" />
+
+    <TextView
+        android:id="@+id/carrier_charges"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="@string/sms_charges_notify"
+        android:textColor="@color/gray"
+        app:layout_constraintEnd_toEndOf="@id/guideline2"
+        app:layout_constraintStart_toStartOf="@id/guideline1"
+        app:layout_constraintTop_toBottomOf="@id/country_code" />
+
+    <!-- OTP Section Starts-->
+
+    <TextView
+        android:id="@+id/otp_login_sub_heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/auto_otp_select"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_heading" />
+
+    <TextView
+        android:id="@+id/otp_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/wrong_number"
+        app:layout_constraintStart_toStartOf="@id/guideline3"
+        app:layout_constraintTop_toBottomOf="@id/otp_login_sub_heading"
+        tools:text="+1 (555) 123-4567. " />
+
+    <TextView
+        android:id="@+id/wrong_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wrong_number"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/guideline4"
+        app:layout_constraintStart_toEndOf="@id/otp_number"
+        app:layout_constraintTop_toBottomOf="@id/otp_login_sub_heading" />
+
+    <EditText
+        android:id="@+id/otp_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:autofillHints="@string/default_otp"
+        android:backgroundTint="@color/gray"
+        android:hint="@string/default_otp"
+        android:imeOptions="actionDone"
+        android:inputType="phone"
+        android:maxLength="6"
+        android:paddingHorizontal="8dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textColorHint="@color/light_gray"
+        android:textSize="24sp"
+        android:textStyle="normal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/guideline2"
+        app:layout_constraintStart_toStartOf="@id/guideline1"
+        app:layout_constraintTop_toBottomOf="@id/otp_number"
+        tools:text="5 4 3 — — —" />
+
+    <TextView
+        android:id="@+id/enter_otp_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/enter_6_digit_code"
+        android:textColor="@color/gray"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/guideline4"
+        app:layout_constraintStart_toStartOf="@id/guideline3"
+        app:layout_constraintTop_toBottomOf="@id/otp_code" />
+
+    <ImageView
+        android:id="@+id/resend_code_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:contentDescription="@string/content_description_call_button"
+        android:src="@drawable/icon_message"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/guideline1"
+        app:layout_constraintTop_toBottomOf="@id/enter_otp_text"
+        app:tint="@color/gray" />
+
+    <TextView
+        android:id="@+id/resend_code_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/resend_sms"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/resend_code_image"
+        app:layout_constraintTop_toTopOf="@id/resend_code_image" />
+
+    <TextView
+        android:id="@+id/resend_otp_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintTop_toTopOf="@id/resend_code_image"
+        tools:text="59:51" />
+</androidx.constraintlayout.widget.ConstraintLayout>

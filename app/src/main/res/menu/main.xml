@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_search"
+        android:icon="@drawable/icon_search"
+        android:title="@string/menu_search"
+        app:showAsAction="always" />
+
+    <group android:id="@+id/menu_more">
+        <item
+            android:id="@+id/menu_group"
+            android:title="@string/new_group" />
+        <item
+            android:id="@+id/menu_broadcast"
+            android:title="@string/new_broadcast" />
+        <item
+            android:id="@+id/menu_web"
+            android:title="@string/byte_web" />
+        <item
+            android:id="@+id/menu_starred"
+            android:title="@string/starred_messages" />
+        <item
+            android:id="@+id/menu_settings"
+            android:title="@string/menu_settings" />
+    </group>
+</menu>
