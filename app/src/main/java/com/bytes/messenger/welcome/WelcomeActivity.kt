@@ -14,7 +14,6 @@ class WelcomeActivity : AppCompatActivity() {
         clickListeners()
     }
 
-
     private fun clickListeners() {
         findViewById<Button>(R.id.accept_n_continue).setOnClickListener {
             startActivity(Intent(this@WelcomeActivity, PhoneLoginActivity::class.java))

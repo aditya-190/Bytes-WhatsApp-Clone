@@ -32,7 +32,7 @@ class UserInfoActivity : AppCompatActivity() {
     private fun clickListeners() {
         findViewById<Button>(R.id.next_button).setOnClickListener {
             val username: String = findViewById<EditText>(R.id.user_name).text.trim().toString()
-            if (username != "") {
+            if (username.isNotEmpty()) {
                 progressBar.visibility = View.VISIBLE
                 val user = FirebaseAuth.getInstance().currentUser
                 if (user != null) {

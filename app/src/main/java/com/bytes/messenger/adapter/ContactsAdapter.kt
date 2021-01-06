@@ -31,7 +31,7 @@ class ContactsAdapter(
         holder.contactBio.text = current.contactBio
 
         val imageUrl = current.contactImage
-        if (imageUrl != "")
+        if (imageUrl.isNotEmpty())
             Glide.with(context).load(imageUrl).centerCrop().into(holder.contactImage)
 
         holder.singleContact.setOnClickListener {

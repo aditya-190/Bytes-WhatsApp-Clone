@@ -50,9 +50,12 @@ class SettingsActivity : AppCompatActivity() {
         firestore.collection("Users").document(firebaseUser.uid).get().addOnSuccessListener {
             userName.text = it.get("userName").toString()
             userBio.text = it.get("bio").toString()
+
             val imageUrl = it.get("profileImage").toString()
-            if (imageUrl != "")
+
+            if (imageUrl.isNotEmpty())
                 Glide.with(applicationContext).load(imageUrl).into(userImage)
+
         }.addOnFailureListener {
             Snackbar.make(findViewById(android.R.id.content),
                 "Something went wrong.",

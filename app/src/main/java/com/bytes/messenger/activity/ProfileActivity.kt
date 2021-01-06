@@ -145,8 +145,11 @@ class ProfileActivity : AppCompatActivity() {
             userName.text = it.get("userName").toString()
             userBio.text = it.get("bio").toString()
             userNumber.text = it.get("userPhone").toString()
+
             val imageUrl = it.get("profileImage").toString()
-            if (imageUrl != "") Glide.with(applicationContext).load(imageUrl).into(userImage)
+
+            if (imageUrl.isNotEmpty()) Glide.with(applicationContext).load(imageUrl).into(userImage)
+
         }.addOnFailureListener {
             Snackbar.make(findViewById(android.R.id.content),
                 "Something went wrong.",

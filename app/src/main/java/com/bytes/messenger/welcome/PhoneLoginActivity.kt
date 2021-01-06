@@ -173,7 +173,7 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
         })
         nextButton.setOnClickListener {
             if (nextButton.text == getString(R.string.button_confirm)) {
-                if (otpEntered.text.toString() != "") {
+                if (otpEntered.text.toString().isNotEmpty()) {
                     progressBar.visibility = View.VISIBLE
                     signIn()
                 } else
