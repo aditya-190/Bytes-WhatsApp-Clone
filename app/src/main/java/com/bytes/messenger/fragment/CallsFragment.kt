@@ -6,29 +6,38 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bytes.messenger.R
 import com.bytes.messenger.adapter.CallsAdapter
+import com.bytes.messenger.databinding.FragmentCallsBinding
 import com.bytes.messenger.model.CallList
-import kotlinx.android.synthetic.main.fragment_calls.view.*
 
 class CallsFragment : Fragment() {
+
+    private var _binding: FragmentCallsBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        val view = inflater.inflate(R.layout.fragment_calls, container, false)
-        view.recycler.also {
+        _binding = FragmentCallsBinding.inflate(inflater, container, false)
+        val view = binding.root
+        binding.recycler.also {
             it.layoutManager = LinearLayoutManager(context)
-            it.adapter = CallsAdapter(fetchData(view), context!!)
+            it.adapter = CallsAdapter(fetchData(), context!!)
         }
         return view
     }
 
-    private fun fetchData(view: View): ArrayList<CallList> {
+    private fun fetchData(): ArrayList<CallList> {
         val callListArrayDemo: ArrayList<CallList> = ArrayList()
         if (callListArrayDemo.size == 0)
-            view.no_call.visibility = View.VISIBLE
+            binding.noCall.visibility = View.VISIBLE
         return callListArrayDemo
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

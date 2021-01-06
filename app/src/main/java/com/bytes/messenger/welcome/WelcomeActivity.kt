@@ -3,15 +3,17 @@ package com.bytes.messenger.welcome
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.bytes.messenger.R
-import kotlinx.android.synthetic.main.activity_welcome.*
+import com.bytes.messenger.databinding.ActivityWelcomeBinding
 
 class WelcomeActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityWelcomeBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_welcome)
+        binding = ActivityWelcomeBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        next_button.setOnClickListener {
+        binding.nextButton.setOnClickListener {
             startActivity(Intent(this@WelcomeActivity, PhoneLoginActivity::class.java))
         }
     }

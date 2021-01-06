@@ -1,17 +1,20 @@
 package com.bytes.messenger.activity
 
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.media.MediaBrowserCompat
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bytes.messenger.MainActivity
 import com.bytes.messenger.R
 import com.bytes.messenger.adapter.ContactsAdapter
+import com.bytes.messenger.databinding.ActivityContactsBinding
 import com.bytes.messenger.model.Contact
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.activity_contacts.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -19,14 +22,15 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class ContactsActivity : AppCompatActivity() {
-
+    private lateinit var binding: ActivityContactsBinding
     private var contactList: ArrayList<Contact> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_contacts)
+        binding = ActivityContactsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         fetchData()
@@ -43,7 +47,7 @@ class ContactsActivity : AppCompatActivity() {
                 }
             }
             withContext(Dispatchers.Main) {
-                recycler.also {
+                binding.recycler.also {
                     it.layoutManager = LinearLayoutManager(this@ContactsActivity)
                     it.adapter = ContactsAdapter(contactList, this@ContactsActivity)
                 }

@@ -5,12 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.bytes.messenger.MainActivity
-import com.bytes.messenger.R
+import com.bytes.messenger.databinding.ActivityUserInfoBinding
 import com.bytes.messenger.model.User
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.activity_user_info.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -18,17 +17,22 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class UserInfoActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityUserInfoBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_info)
+        binding = ActivityUserInfoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        next_button.setOnClickListener {
-            if (name.text.trim().toString().isNotEmpty()) {
+        binding.nextButton.setOnClickListener {
+            if (binding.name.text.trim().toString().isNotEmpty()) {
                 val user = FirebaseAuth.getInstance().currentUser
-                progressBar.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
                 if (user != null) {
-                    val newUser = User(user.uid,
-                        name.text.trim().toString(),
+                    val newUser = User(
+                        user.uid,
+                        binding.name.text.trim().toString(),
                         user.phoneNumber!!,
                         "",
                         "Hey there! I am using Bytes.",
@@ -39,7 +43,7 @@ class UserInfoActivity : AppCompatActivity() {
                         FirebaseFirestore.getInstance().collection("Users").document(user.uid)
                             .set(newUser).await()
                         withContext(Dispatchers.Main) {
-                            progressBar.visibility = View.INVISIBLE
+                            binding.progressBar.visibility = View.INVISIBLE
                             startActivity(Intent(this@UserInfoActivity, MainActivity::class.java))
                             finish()
                         }
@@ -52,5 +56,8 @@ class UserInfoActivity : AppCompatActivity() {
                     .show()
             }
         }
+    }
+
+    override fun onBackPressed() {
     }
 }

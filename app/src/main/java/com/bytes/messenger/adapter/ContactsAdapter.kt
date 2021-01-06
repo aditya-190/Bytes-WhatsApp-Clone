@@ -42,6 +42,7 @@ class ContactsAdapter(
                 it.putExtra("userImage", current.contactImage)
                 it.putExtra("userLastSeen", current.lastSeen)
             })
+
         }
     }
 

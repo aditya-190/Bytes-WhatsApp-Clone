@@ -8,9 +8,10 @@ import androidx.core.widget.addTextChangedListener
 import com.bumptech.glide.Glide
 import com.bytes.messenger.MainActivity
 import com.bytes.messenger.R
-import kotlinx.android.synthetic.main.activity_message.*
+import com.bytes.messenger.databinding.ActivityMessageBinding
 
 class MessageActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMessageBinding
     private lateinit var receiverID: String
     private lateinit var lastSeen: String
     private lateinit var receiverName: String
@@ -18,7 +19,8 @@ class MessageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_message)
+        binding = ActivityMessageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initialise()
         clickListeners()
@@ -30,45 +32,39 @@ class MessageActivity : AppCompatActivity() {
         userImage = intent.getStringExtra("userImage").toString()
         receiverID = intent.getStringExtra("userID").toString()
 
-        name.text = receiverName
-        last_seen.text = lastSeen
+        binding.name.text = receiverName
+        binding.lastSeen.text = lastSeen
 
         if (userImage.isNotEmpty())
-            Glide.with(applicationContext).load(userImage).into(image)
+            Glide.with(applicationContext).load(userImage).into(binding.image)
     }
 
     private fun clickListeners() {
 
-        message.addTextChangedListener {
-            if (message.text.toString().trim().isNotEmpty()) {
-                send_button.setImageResource(R.drawable.icon_send)
-                photos.visibility = View.GONE
-                attachment.visibility = View.GONE
+        binding.message.addTextChangedListener {
+            if (binding.message.text.toString().trim().isNotEmpty()) {
+                binding.sendButton.setImageResource(R.drawable.icon_send)
+                binding.photos.visibility = View.GONE
+                binding.attachment.visibility = View.GONE
             } else {
-                send_button.setImageResource(R.drawable.icon_mic)
-                photos.visibility = View.VISIBLE
-                attachment.visibility = View.VISIBLE
+                binding.sendButton.setImageResource(R.drawable.icon_mic)
+                binding.photos.visibility = View.VISIBLE
+                binding.attachment.visibility = View.VISIBLE
             }
         }
 
-        send_button.setOnClickListener {
-            if (message.text.toString().trim().isNotEmpty()) {
-                sendMessage(message.text.toString())
+        binding.sendButton.setOnClickListener {
+            if (binding.message.text.toString().trim().isNotEmpty()) {
+                sendMessage(binding.message.text.toString())
             }
         }
 
-        back_button.setOnClickListener {
-            startActivity(Intent(this@MessageActivity, MainActivity::class.java))
-            finish()
+        binding.backButton.setOnClickListener {
+            onBackPressed()
         }
     }
 
     private fun sendMessage(message: String) {
 
-    }
-
-    override fun onBackPressed() {
-        startActivity(Intent(this@MessageActivity, MainActivity::class.java))
-        finish()
     }
 }

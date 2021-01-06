@@ -14,6 +14,8 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bytes.messenger.R
+import com.bytes.messenger.databinding.ActivityProfileBinding
+import com.bytes.messenger.databinding.ChangeProfileInfoBinding
 import com.bytes.messenger.welcome.WelcomeActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -23,8 +25,6 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kotlinx.android.synthetic.main.activity_profile.*
-import kotlinx.android.synthetic.main.change_profile_info.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -33,7 +33,8 @@ import kotlinx.coroutines.withContext
 
 
 class ProfileActivity : AppCompatActivity() {
-
+    private lateinit var binding: ActivityProfileBinding
+    private lateinit var dialogBinding: ChangeProfileInfoBinding
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var firestore: FirebaseFirestore
     private lateinit var fireStoreReference: DocumentReference
@@ -42,7 +43,9 @@ class ProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile)
+        binding = ActivityProfileBinding.inflate(layoutInflater)
+        dialogBinding = ChangeProfileInfoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initialise()
         getUserInfo()
@@ -53,26 +56,26 @@ class ProfileActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         fireStoreReference = firestore.collection("Users").document(firebaseUser.uid)
-        bottomSheet = BottomSheetBehavior.from(profile_picker)
+        bottomSheet = BottomSheetBehavior.from(binding.profilePicker)
     }
 
     private fun clickListeners() {
-        edit_name.setOnClickListener {
+        binding.editName.setOnClickListener {
             Dialog(this@ProfileActivity).also { dialog ->
-                dialog.setContentView(R.layout.change_profile_info)
+                dialog.setContentView(dialogBinding.root)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                dialog.change_info_heading.text =
+                dialogBinding.changeInfoHeading.text =
                     getString(R.string.enter_name)
-                val newInfo: EditText = dialog.new_info.also {
+                val newInfo: EditText = dialogBinding.newInfo.also {
                     it.hint = "Name Goes Here..."
                     it.inputType = InputType.TYPE_TEXT_VARIATION_PERSON_NAME
                 }
 
-                dialog.cancel_button.setOnClickListener {
+                dialogBinding.cancelButton.setOnClickListener {
                     dialog.dismiss()
                 }
 
-                dialog.save_button.setOnClickListener {
+                dialogBinding.saveButton.setOnClickListener {
                     if (newInfo.text.trim().toString().isNotEmpty())
                         updateInfo("Name", newInfo.text.trim().toString(), null)
                     dialog.dismiss()
@@ -80,22 +83,22 @@ class ProfileActivity : AppCompatActivity() {
                 dialog.show()
             }
         }
-        edit_bio.setOnClickListener {
+        binding.editBio.setOnClickListener {
             Dialog(this@ProfileActivity).also { dialog ->
                 dialog.setContentView(R.layout.change_profile_info)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                dialog.change_info_heading.text =
+                dialogBinding.changeInfoHeading.text =
                     getString(R.string.bio)
-                val newInfo: EditText = dialog.new_info.also {
+                val newInfo: EditText = dialogBinding.newInfo.also {
                     it.hint = "Here goes the Bio..."
                     it.inputType = InputType.TYPE_TEXT_VARIATION_PHONETIC
                 }
 
-                dialog.cancel_button.setOnClickListener {
+                dialogBinding.cancelButton.setOnClickListener {
                     dialog.dismiss()
                 }
 
-                dialog.save_button.setOnClickListener {
+                dialogBinding.saveButton.setOnClickListener {
                     if (newInfo.text.trim().toString().isNotEmpty())
                         updateInfo("Bio", newInfo.text.trim().toString(), null)
                     dialog.dismiss()
@@ -103,18 +106,18 @@ class ProfileActivity : AppCompatActivity() {
                 dialog.show()
             }
         }
-        edit_number.setOnClickListener {
+        binding.editNumber.setOnClickListener {
             Snackbar.make(findViewById(android.R.id.content),
                 "Feature Pending.",
                 Snackbar.LENGTH_SHORT).show()
         }
-        sign_out.setOnClickListener {
+        binding.signOut.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(this@ProfileActivity, WelcomeActivity::class.java))
             finish()
         }
 
-        gallery_picker.setOnClickListener {
+        binding.galleryPicker.setOnClickListener {
             Intent().also {
                 it.type = "image/*"
                 it.action = Intent.ACTION_GET_CONTENT
@@ -124,7 +127,7 @@ class ProfileActivity : AppCompatActivity() {
             bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-        change.setOnClickListener {
+        binding.change.setOnClickListener {
             if (bottomSheet.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
             else
@@ -136,13 +139,13 @@ class ProfileActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.IO) {
             val it = fireStoreReference.get().await()
             withContext(Dispatchers.Main) {
-                name.text = it.get("userName").toString()
-                bio.text = it.get("bio").toString()
-                number.text = it.get("userPhone").toString()
+                binding.name.text = it.get("userName").toString()
+                binding.bio.text = it.get("bio").toString()
+                binding.number.text = it.get("userPhone").toString()
 
                 val imageUrl = it.get("profileImage").toString()
                 if (imageUrl.isNotEmpty()) Glide.with(applicationContext).load(imageUrl)
-                    .into(image)
+                    .into(binding.image)
             }
         }
     }
@@ -171,7 +174,7 @@ class ProfileActivity : AppCompatActivity() {
             "Image" -> {
                 if (imageUri != null) {
                     val cloudReference: StorageReference =
-                        FirebaseStorage.getInstance().reference.child("Profiles/${number.text}-${firebaseUser.uid}")
+                        FirebaseStorage.getInstance().reference.child("Profiles/${binding.number.text}-${firebaseUser.uid}")
                     cloudReference.putFile(imageUri).addOnSuccessListener {
                         cloudReference.downloadUrl.addOnSuccessListener { uri ->
                             firestore.collection("Users").document(firebaseUser.uid)
@@ -202,7 +205,7 @@ class ProfileActivity : AppCompatActivity() {
 
                 else -> MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
             }
-            image.setImageBitmap(bitmap)
+            binding.image.setImageBitmap(bitmap)
             updateInfo("Image", null, imageUri)
         } else {
             Snackbar.make(findViewById(android.R.id.content),

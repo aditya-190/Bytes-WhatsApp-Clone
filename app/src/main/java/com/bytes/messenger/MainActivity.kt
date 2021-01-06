@@ -14,29 +14,31 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.bytes.messenger.activity.ContactsActivity
 import com.bytes.messenger.activity.SettingsActivity
+import com.bytes.messenger.databinding.ActivityMainBinding
 import com.bytes.messenger.fragment.CallsFragment
 import com.bytes.messenger.fragment.ChatsFragment
 import com.bytes.messenger.fragment.StatusFragment
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private var fragmentPosition: Int = 0
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setSupportActionBar(toolbar)
-        view_pager.adapter = ViewPagerAdapter(supportFragmentManager)
-        tab.setupWithViewPager(view_pager)
-        view_pager.setCurrentItem(0, true)
+        setSupportActionBar(binding.toolbar)
+        binding.viewPager.adapter = ViewPagerAdapter(supportFragmentManager)
+        binding.tab.setupWithViewPager(binding.viewPager)
+        binding.viewPager.setCurrentItem(0, true)
 
         clickListeners()
     }
 
     private fun clickListeners() {
-        view_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+        binding.viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
             override fun onPageScrolled(
                 position: Int,
@@ -47,36 +49,38 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageSelected(position: Int) {
                 fragmentPosition = position
-                fab.hide()
+                binding.fab.hide()
                 Handler(Looper.myLooper()!!).postDelayed({
                     when (position) {
-                        0 -> fab.setImageDrawable(
+                        0 -> binding.fab.setImageDrawable(
                             ContextCompat.getDrawable(
                                 this@MainActivity,
                                 R.drawable.icon_chat
                             )
                         )
-                        1 -> fab.setImageDrawable(
+                        1 -> binding.fab.setImageDrawable(
                             ContextCompat.getDrawable(
                                 this@MainActivity,
                                 R.drawable.icon_camera
                             )
                         )
-                        else -> fab.setImageDrawable(
+                        else -> binding.fab.setImageDrawable(
                             ContextCompat.getDrawable(
                                 this@MainActivity,
                                 R.drawable.icon_phone
                             )
                         )
                     }
-                    fab.show()
+                    binding.fab.show()
                 }, 100)
             }
         })
 
-        fab.setOnClickListener {
+        binding.fab.setOnClickListener {
             when (fragmentPosition) {
-                0 -> startActivity(Intent(this@MainActivity, ContactsActivity::class.java))
+                0 -> {
+                    startActivity(Intent(this@MainActivity, ContactsActivity::class.java))
+                }
                 1 -> Snackbar.make(findViewById(android.R.id.content), "1",
                     Snackbar.LENGTH_SHORT).show()
                 else -> Snackbar.make(findViewById(android.R.id.content), "2",
