@@ -39,9 +39,9 @@
         android:id="@+id/progressBar"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone"
         android:scaleType="centerCrop"
         android:src="@drawable/loader"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="@id/guideline4"
@@ -49,7 +49,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/info_heading"
+        android:id="@+id/heading"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -62,7 +62,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/info_sub_heading"
+        android:id="@+id/sub_heading"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -72,10 +72,10 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/info_heading" />
+        app:layout_constraintTop_toBottomOf="@id/heading" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/profile_image_container"
+        android:id="@+id/image_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
@@ -85,10 +85,10 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="@id/guideline2"
         app:layout_constraintStart_toStartOf="@id/guideline1"
-        app:layout_constraintTop_toBottomOf="@id/info_sub_heading">
+        app:layout_constraintTop_toBottomOf="@id/sub_heading">
 
         <ImageView
-            android:id="@+id/profile_image"
+            android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/content_description_user_image"
@@ -99,7 +99,7 @@
     </androidx.cardview.widget.CardView>
 
     <EditText
-        android:id="@+id/user_name"
+        android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -113,20 +113,20 @@
         android:textColorHint="@color/gray"
         android:textSize="14sp"
         android:textStyle="normal"
-        app:layout_constraintEnd_toStartOf="@id/select_emojis"
+        app:layout_constraintEnd_toStartOf="@id/emoji"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_image_container" />
+        app:layout_constraintTop_toBottomOf="@id/image_container" />
 
     <ImageView
-        android:id="@+id/select_emojis"
+        android:id="@+id/emoji"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:contentDescription="@string/content_description_call_button"
         android:src="@drawable/icon_emoji"
-        app:layout_constraintBottom_toBottomOf="@id/user_name"
+        app:layout_constraintBottom_toBottomOf="@id/name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/user_name"
+        app:layout_constraintTop_toTopOf="@id/name"
         app:tint="@color/light_gray" />
 
     <Button

@@ -17,37 +17,26 @@ import com.bytes.messenger.activity.SettingsActivity
 import com.bytes.messenger.fragment.CallsFragment
 import com.bytes.messenger.fragment.ChatsFragment
 import com.bytes.messenger.fragment.StatusFragment
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var fabIcon: FloatingActionButton
-    private lateinit var viewPager: ViewPager
-    private lateinit var tabLayout: TabLayout
     private var fragmentPosition: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initialise()
+        setSupportActionBar(toolbar)
+        view_pager.adapter = ViewPagerAdapter(supportFragmentManager)
+        tab.setupWithViewPager(view_pager)
+        view_pager.setCurrentItem(0, true)
+
         clickListeners()
     }
 
-    private fun initialise() {
-        viewPager = findViewById(R.id.main_view_pager)
-        tabLayout = findViewById(R.id.main_tab_layout)
-        fabIcon = findViewById(R.id.floating_action_button)
-
-        setSupportActionBar(findViewById(R.id.main_toolbar))
-        viewPager.adapter = ViewPagerAdapter(supportFragmentManager)
-        tabLayout.setupWithViewPager(viewPager)
-        viewPager.setCurrentItem(0, true)
-    }
-
     private fun clickListeners() {
-        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+        view_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
             override fun onPageScrolled(
                 position: Int,
@@ -58,34 +47,34 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageSelected(position: Int) {
                 fragmentPosition = position
-                fabIcon.hide()
+                fab.hide()
                 Handler(Looper.myLooper()!!).postDelayed({
                     when (position) {
-                        0 -> fabIcon.setImageDrawable(
+                        0 -> fab.setImageDrawable(
                             ContextCompat.getDrawable(
                                 this@MainActivity,
                                 R.drawable.icon_chat
                             )
                         )
-                        1 -> fabIcon.setImageDrawable(
+                        1 -> fab.setImageDrawable(
                             ContextCompat.getDrawable(
                                 this@MainActivity,
                                 R.drawable.icon_camera
                             )
                         )
-                        else -> fabIcon.setImageDrawable(
+                        else -> fab.setImageDrawable(
                             ContextCompat.getDrawable(
                                 this@MainActivity,
                                 R.drawable.icon_phone
                             )
                         )
                     }
-                    fabIcon.show()
+                    fab.show()
                 }, 100)
             }
         })
 
-        fabIcon.setOnClickListener {
+        fab.setOnClickListener {
             when (fragmentPosition) {
                 0 -> startActivity(Intent(this@MainActivity, ContactsActivity::class.java))
                 1 -> Snackbar.make(findViewById(android.R.id.content), "1",
@@ -136,11 +125,10 @@ class MainActivity : AppCompatActivity() {
 
     private class ViewPagerAdapter(manager: FragmentManager) :
         FragmentPagerAdapter(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-
         private val tabTitles = arrayOf("Chats", "Status", "Calls")
 
         override fun getCount(): Int {
-            return 3
+            return tabTitles.size
         }
 
         override fun getItem(position: Int): Fragment {

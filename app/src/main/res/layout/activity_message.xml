@@ -9,7 +9,7 @@
     tools:context=".activity.MessageActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/message_toolbar"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp">
@@ -37,7 +37,7 @@
                 app:cardElevation="0dp">
 
                 <ImageView
-                    android:id="@+id/user_image"
+                    android:id="@+id/image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:contentDescription="@string/content_description_user_image"
@@ -53,7 +53,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/user_name"
+                    android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -107,7 +107,7 @@
                 android:minHeight="50dp">
 
                 <ImageView
-                    android:id="@+id/select_emojis"
+                    android:id="@+id/emoji"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
@@ -138,7 +138,7 @@
                     android:textStyle="normal" />
 
                 <ImageView
-                    android:id="@+id/select_attachment"
+                    android:id="@+id/attachment"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
@@ -149,7 +149,7 @@
                     app:tint="@color/disabled" />
 
                 <ImageView
-                    android:id="@+id/select_photo"
+                    android:id="@+id/photos"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
@@ -161,7 +161,7 @@
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/voice_message_n_send_button"
+            android:id="@+id/send_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="bottom"

@@ -7,7 +7,7 @@
     tools:context=".welcome.WelcomeActivity">
 
     <TextView
-        android:id="@+id/welcome_message"
+        android:id="@+id/message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/byte_logo"
+        android:id="@+id/logo"
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_marginTop="24dp"
@@ -29,7 +29,7 @@
         android:src="@drawable/logo_byte_messenger"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
+        app:layout_constraintTop_toBottomOf="@+id/message" />
 
     <TextView
         android:id="@+id/terms_n_conditions"
@@ -43,10 +43,10 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/byte_logo" />
+        app:layout_constraintTop_toBottomOf="@id/logo" />
 
     <Button
-        android:id="@+id/accept_n_continue"
+        android:id="@+id/next_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"

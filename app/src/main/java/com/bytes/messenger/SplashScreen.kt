@@ -12,9 +12,7 @@ class SplashScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
-    }
 
-    private fun redirect() {
         if ((FirebaseAuth.getInstance().currentUser != null)) {
             Handler(Looper.myLooper()!!).postDelayed({
                 startActivity(Intent(this@SplashScreen, MainActivity::class.java))
@@ -24,10 +22,5 @@ class SplashScreen : AppCompatActivity() {
             startActivity(Intent(this@SplashScreen, WelcomeActivity::class.java))
             finish()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        redirect()
     }
 }

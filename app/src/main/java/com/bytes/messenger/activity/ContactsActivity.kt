@@ -4,15 +4,14 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bytes.messenger.R
 import com.bytes.messenger.adapter.ContactsAdapter
 import com.bytes.messenger.model.Contact
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_contacts.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -27,17 +26,10 @@ class ContactsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contacts)
 
-        fetchData()
-        initialise()
-        clickListeners()
-    }
-
-    private fun initialise() {
-        setSupportActionBar(findViewById(R.id.contacts_toolbar))
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
 
-    private fun clickListeners() {
+        fetchData()
     }
 
     private fun fetchData() {
@@ -51,7 +43,7 @@ class ContactsActivity : AppCompatActivity() {
                 }
             }
             withContext(Dispatchers.Main) {
-                findViewById<RecyclerView>(R.id.contacts_recycler).also {
+                recycler.also {
                     it.layoutManager = LinearLayoutManager(this@ContactsActivity)
                     it.adapter = ContactsAdapter(contactList, this@ContactsActivity)
                 }

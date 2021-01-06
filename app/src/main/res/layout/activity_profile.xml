@@ -25,7 +25,7 @@
             app:layout_constraintGuide_percent="0.75" />
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/profile_toolbar"
+            android:id="@+id/toolbar"
             android:layout_width="0dp"
             android:layout_height="?actionBarSize"
             android:background="@color/colorPrimary"
@@ -36,7 +36,7 @@
             app:titleTextColor="@color/white" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/user_image_container"
+            android:id="@+id/image_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
@@ -46,10 +46,10 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="@id/guideline2"
             app:layout_constraintStart_toStartOf="@id/guideline1"
-            app:layout_constraintTop_toBottomOf="@id/profile_toolbar">
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
 
             <ImageView
-                android:id="@+id/user_image"
+                android:id="@+id/image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/content_description_user_image"
@@ -58,19 +58,19 @@
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/changeProfile"
+            android:id="@+id/change"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorPrimary"
             android:contentDescription="@string/content_description_add_status"
             android:elevation="10dp"
             android:src="@drawable/icon_camera"
-            app:layout_constraintBottom_toBottomOf="@+id/user_image_container"
-            app:layout_constraintEnd_toEndOf="@+id/user_image_container"
+            app:layout_constraintBottom_toBottomOf="@+id/image_container"
+            app:layout_constraintEnd_toEndOf="@+id/image_container"
             app:tint="@color/white" />
 
         <LinearLayout
-            android:id="@+id/name_textview"
+            android:id="@+id/name_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
@@ -78,7 +78,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_image_container">
+            app:layout_constraintTop_toBottomOf="@id/image_container">
 
             <ImageView
                 android:layout_width="50dp"
@@ -106,7 +106,7 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/user_name"
+                    android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
@@ -122,7 +122,7 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/edit_username"
+                android:id="@+id/edit_name"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
@@ -134,7 +134,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/bio_textview"
+            android:id="@+id/bio_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
@@ -142,7 +142,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name_textview">
+            app:layout_constraintTop_toBottomOf="@+id/name_tv">
 
             <ImageView
                 android:layout_width="50dp"
@@ -170,7 +170,7 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/user_bio"
+                    android:id="@+id/bio"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
@@ -190,7 +190,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/user_number_container"
+            android:id="@+id/number_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
@@ -198,7 +198,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bio_textview">
+            app:layout_constraintTop_toBottomOf="@+id/bio_tv">
 
             <ImageView
                 android:layout_width="50dp"
@@ -226,7 +226,7 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/user_number"
+                    android:id="@+id/number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
@@ -235,7 +235,7 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/edit_phone_number"
+                android:id="@+id/edit_number"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
@@ -255,9 +255,9 @@
             android:text="@string/sign_out"
             android:textAllCaps="false"
             android:textColor="@color/colorPrimary"
-            app:layout_constraintEnd_toEndOf="@+id/profile_toolbar"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_number_container" />
+            app:layout_constraintTop_toBottomOf="@id/number_tv" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout

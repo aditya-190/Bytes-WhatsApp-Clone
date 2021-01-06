@@ -7,7 +7,7 @@
     tools:context=".activity.SettingsActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/settings_toolbar"
+        android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="?actionBarSize"
         android:background="@color/colorPrimary"
@@ -24,7 +24,7 @@
         app:layout_constraintBottom_toTopOf="@id/from_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settings_toolbar">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,7 +45,7 @@
                     app:cardElevation="0dp">
 
                     <ImageView
-                        android:id="@+id/user_image"
+                        android:id="@+id/image"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:contentDescription="@string/content_description_user_image"
@@ -61,7 +61,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/user_name"
+                        android:id="@+id/name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -74,7 +74,7 @@
                         tools:text="Username" />
 
                     <TextView
-                        android:id="@+id/user_bio"
+                        android:id="@+id/bio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -351,7 +351,6 @@
                     app:tint="@color/colorPrimary" />
 
                 <TextView
-                    android:id="@+id/settings_invite_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

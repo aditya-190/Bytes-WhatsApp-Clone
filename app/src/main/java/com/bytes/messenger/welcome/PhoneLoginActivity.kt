@@ -13,6 +13,7 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_phone_login.*
 import java.util.concurrent.TimeUnit
 
 
@@ -23,24 +24,7 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseFirestore
-    private lateinit var nextButton: Button
-    private lateinit var phoneNumber: EditText
-    private lateinit var otpEntered: EditText
-    private lateinit var heading: TextView
-    private lateinit var phoneSubHeading: TextView
-    private lateinit var phoneCountryCode: TextView
-    private lateinit var otpSubHeading: TextView
-    private lateinit var otpNumber: TextView
-    private lateinit var otpWrongNumber: TextView
-    private lateinit var otpSubSubHeading: TextView
-    private lateinit var otpResendText: TextView
-    private lateinit var otpResendTimer: TextView
-    private lateinit var phoneCarrierCharges: TextView
-    private lateinit var verificationID: String
-    private lateinit var phoneSpinner: Spinner
-    private lateinit var otpResendImage: ImageView
-    private lateinit var progressBar: pl.droidsonroids.gif.GifImageView
-    private val countryNames = arrayOf(
+    private val countryNamesArray = arrayOf(
         "Afghanistan", "Albania",
         "Algeria", "Andorra", "Angola", "Antarctica", "Argentina",
         "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan",
@@ -86,7 +70,7 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
         "Holy See (vatican City State)", "Venezuela", "Viet Nam",
         "Wallis And Futuna", "Yemen", "Zambia", "Zimbabwe"
     )
-    private val countryCodes = arrayOf(
+    private val countryCodesArray = arrayOf(
         "93", "355", "213",
         "376", "244", "672", "54", "374", "297", "61", "43", "994", "973",
         "880", "375", "32", "501", "229", "975", "591", "387", "267", "55",
@@ -110,8 +94,10 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
         "993", "688", "971", "256", "44", "380", "598", "1", "998", "678",
         "39", "58", "84", "681", "967", "260", "263"
     )
+    private lateinit var verificationID: String
     private lateinit var code: String
     private lateinit var number: String
+    private lateinit var currentLayout: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,30 +110,13 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
     private fun initialise() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseFirestore.getInstance()
-        progressBar = findViewById(R.id.progressBar)
-        nextButton = findViewById(R.id.next_button)
-        heading = findViewById(R.id.login_heading)
+        currentLayout = "PHONE_SECTION"
+        val adapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, countryNamesArray).also {
+                it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            }
 
-        phoneSubHeading = findViewById(R.id.login_sub_heading)
-        phoneSpinner = findViewById(R.id.country_selector)
-        phoneCountryCode = findViewById(R.id.country_code)
-        phoneNumber = findViewById(R.id.phone_number)
-        phoneCarrierCharges = findViewById(R.id.carrier_charges)
-
-        otpSubHeading = findViewById(R.id.otp_login_sub_heading)
-        otpNumber = findViewById(R.id.otp_number)
-        otpSubSubHeading = findViewById(R.id.enter_otp_text)
-        otpWrongNumber = findViewById(R.id.wrong_number)
-        otpEntered = findViewById(R.id.otp_code)
-        otpResendImage = findViewById(R.id.resend_code_image)
-        otpResendText = findViewById(R.id.resend_code_text)
-        otpResendTimer = findViewById(R.id.resend_otp_timer)
-
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, countryNames).also {
-            it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
-
-        phoneSpinner.also {
+        country_name.also {
             it.textAlignment = View.TEXT_ALIGNMENT_CENTER
             it.isScrollbarFadingEnabled = true
             it.scrollBarFadeDuration = 10
@@ -158,80 +127,53 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
     }
 
     private fun clickListeners() {
-        phoneNumber.addTextChangedListener(object : TextWatcher {
+        phone_number.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (android.util.Patterns.PHONE.matcher(s).matches())
-                    nextButton.isEnabled = true
+                    next_button.isEnabled = true
             }
 
             override fun afterTextChanged(s: Editable?) {
             }
 
         })
-        nextButton.setOnClickListener {
-            if (nextButton.text == getString(R.string.button_confirm)) {
-                if (otpEntered.text.toString().isNotEmpty()) {
-                    progressBar.visibility = View.VISIBLE
-                    signIn()
-                } else
-                    Snackbar.make(findViewById(android.R.id.content),
-                        "Please enter the OTP.",
-                        Snackbar.LENGTH_SHORT).show()
-            } else {
+        next_button.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+            sendOTP()
+        }
+
+        confirm_button.setOnClickListener {
+            if (otp_code.text.toString().isNotEmpty()) {
                 progressBar.visibility = View.VISIBLE
-                sendOTP()
-            }
+                signIn()
+            } else
+                Snackbar.make(findViewById(android.R.id.content),
+                    "Please enter the OTP.",
+                    Snackbar.LENGTH_SHORT).show()
         }
     }
 
     private fun changeLayout(to: String) {
-        if (to == getString(R.string.button_confirm)) {
-            nextButton.text = getString(R.string.button_confirm)
-            heading.text = String.format("Verify (%s) %s", code, number)
-            otpNumber.text = String.format("Verify (%s) %s. ", code, number)
-
-            phoneSubHeading.visibility = View.GONE
-            phoneSpinner.visibility = View.GONE
-            phoneCountryCode.visibility = View.GONE
-            phoneNumber.visibility = View.GONE
-            phoneCarrierCharges.visibility = View.GONE
-
-            otpSubHeading.visibility = View.VISIBLE
-            otpNumber.visibility = View.VISIBLE
-            otpSubSubHeading.visibility = View.VISIBLE
-            otpWrongNumber.visibility = View.VISIBLE
-            otpEntered.visibility = View.VISIBLE
-            otpResendImage.visibility = View.VISIBLE
-            otpResendText.visibility = View.VISIBLE
-            otpResendTimer.visibility = View.VISIBLE
+        if (to == "OTP_SECTION") {
+            otp_heading.text = String.format("Verify (%s) %s", code, number)
+            otp_number_tv.text = String.format("Verify (%s) %s. ", code, number)
+            currentLayout = "OTP_SECTION"
+            phone_section.visibility = View.GONE
+            otp_section.visibility = View.VISIBLE
 
         } else {
-            nextButton.text = getString(R.string.button_next)
-            heading.text = getString(R.string.heading_phone_number)
-
-            phoneSubHeading.visibility = View.VISIBLE
-            phoneSpinner.visibility = View.VISIBLE
-            phoneCountryCode.visibility = View.VISIBLE
-            phoneNumber.visibility = View.VISIBLE
-            phoneCarrierCharges.visibility = View.VISIBLE
-
-            otpSubHeading.visibility = View.GONE
-            otpNumber.visibility = View.GONE
-            otpSubSubHeading.visibility = View.GONE
-            otpWrongNumber.visibility = View.GONE
-            otpEntered.visibility = View.GONE
-            otpResendImage.visibility = View.GONE
-            otpResendText.visibility = View.GONE
-            otpResendTimer.visibility = View.GONE
+            currentLayout = "PHONE_SECTION"
+            phone_section.visibility = View.VISIBLE
+            otp_section.visibility = View.GONE
         }
     }
 
     private fun sendOTP() {
-        code = phoneCountryCode.text.toString()
-        number = phoneNumber.text.toString()
+        code = country_code.text.toString()
+        number = phone_number.text.toString()
 
         PhoneAuthProvider.verifyPhoneNumber(
             PhoneAuthOptions.newBuilder(auth)
@@ -240,13 +182,12 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
                 .setActivity(this)
                 .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                     override fun onVerificationCompleted(credentials: PhoneAuthCredential) {
-                        changeLayout(getString(R.string.button_confirm))
                         progressBar.visibility = View.INVISIBLE
+                        changeLayout("OTP_SECTION")
                     }
 
                     override fun onVerificationFailed(error: FirebaseException) {
                         progressBar.visibility = View.INVISIBLE
-
                         when (error) {
                             is FirebaseAuthInvalidCredentialsException -> {
                                 Snackbar.make(findViewById(android.R.id.content),
@@ -265,8 +206,8 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
                         token: PhoneAuthProvider.ForceResendingToken,
                     ) {
                         super.onCodeSent(code, token)
-                        changeLayout(getString(R.string.button_confirm))
                         progressBar.visibility = View.INVISIBLE
+                        changeLayout("OTP_SECTION")
                         verificationID = code
                     }
                 }).build()
@@ -275,7 +216,7 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
 
     private fun signIn() {
         val credentials: PhoneAuthCredential =
-            PhoneAuthProvider.getCredential(verificationID, otpEntered.text.toString())
+            PhoneAuthProvider.getCredential(verificationID, otp_code.text.toString())
         auth.signInWithCredential(credentials).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 progressBar.visibility = View.INVISIBLE
@@ -295,16 +236,16 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
 
     override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
         parent.getItemAtPosition(pos)
-        phoneCountryCode.text = String.format("+%s", countryCodes[pos])
+        country_code.text = String.format("+%s", countryCodesArray[pos])
     }
 
     override fun onNothingSelected(parent: AdapterView<*>) {
     }
 
     override fun onBackPressed() {
-        if (nextButton.text == getString(R.string.button_next))
+        if (currentLayout == "PHONE_SECTION")
             super.onBackPressed()
         else
-            changeLayout(getString(R.string.button_next))
+            changeLayout("PHONE_SECTION")
     }
 }
