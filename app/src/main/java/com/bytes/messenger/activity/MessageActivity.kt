@@ -29,7 +29,7 @@ class MessageActivity : AppCompatActivity() {
     private lateinit var lastSeen: String
     private lateinit var receiverName: String
     private lateinit var userImage: String
-    private lateinit var messageList: MutableList<Message>
+    private lateinit var messageList: ArrayList<Message>
     private lateinit var adapter: MessageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {

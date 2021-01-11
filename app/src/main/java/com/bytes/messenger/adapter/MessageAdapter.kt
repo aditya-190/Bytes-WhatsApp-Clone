@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 class MessageAdapter(
-    private var messageList: MutableList<Message>,
+    private var messageList: ArrayList<Message>,
     private var context: Context,
 ) : RecyclerView.Adapter<MessageAdapter.MessageListViewHolder>() {
 
