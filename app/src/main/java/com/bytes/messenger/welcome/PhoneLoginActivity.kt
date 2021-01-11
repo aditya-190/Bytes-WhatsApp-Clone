@@ -199,6 +199,11 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
                                 Snackbar.make(findViewById(android.R.id.content), "Quota exceeded.",
                                     Snackbar.LENGTH_SHORT).show()
                             }
+                            else -> {
+                                Snackbar.make(findViewById(android.R.id.content),
+                                    "Please Try Again Later.",
+                                    Snackbar.LENGTH_SHORT).show()
+                            }
                         }
                     }
 
@@ -244,9 +249,10 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
     }
 
     override fun onBackPressed() {
-        if (currentLayout == "PHONE_SECTION")
-            super.onBackPressed()
-        else
+        if (currentLayout == "PHONE_SECTION") {
+            startActivity(Intent(this@PhoneLoginActivity, WelcomeActivity::class.java))
+            finish()
+        } else
             changeLayout("PHONE_SECTION")
     }
 }

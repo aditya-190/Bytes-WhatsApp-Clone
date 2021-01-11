@@ -1,13 +1,10 @@
 package com.bytes.messenger.activity
 
-import android.content.Intent
 import android.os.Bundle
-import android.support.v4.media.MediaBrowserCompat
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bytes.messenger.MainActivity
 import com.bytes.messenger.R
 import com.bytes.messenger.adapter.ContactsAdapter
 import com.bytes.messenger.databinding.ActivityContactsBinding

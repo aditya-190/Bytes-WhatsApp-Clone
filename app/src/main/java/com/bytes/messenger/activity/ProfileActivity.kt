@@ -10,7 +10,9 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType
-import android.widget.*
+import android.view.View
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bytes.messenger.R
@@ -34,7 +36,6 @@ import kotlinx.coroutines.withContext
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
-    private lateinit var dialogBinding: ChangeProfileInfoBinding
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var firestore: FirebaseFirestore
     private lateinit var fireStoreReference: DocumentReference
@@ -44,7 +45,6 @@ class ProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
-        dialogBinding = ChangeProfileInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         initialise()
@@ -61,6 +61,8 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun clickListeners() {
         binding.editName.setOnClickListener {
+            val dialogBinding = ChangeProfileInfoBinding.inflate(layoutInflater)
+
             Dialog(this@ProfileActivity).also { dialog ->
                 dialog.setContentView(dialogBinding.root)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -84,8 +86,9 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
         binding.editBio.setOnClickListener {
+            val dialogBinding = ChangeProfileInfoBinding.inflate(layoutInflater)
             Dialog(this@ProfileActivity).also { dialog ->
-                dialog.setContentView(R.layout.change_profile_info)
+                dialog.setContentView(dialogBinding.root)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 dialogBinding.changeInfoHeading.text =
                     getString(R.string.bio)
@@ -151,11 +154,13 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun updateInfo(type: String, newInfo: String?, imageUri: Uri?) {
+        binding.progressBar.visibility = View.VISIBLE
         when (type) {
             "Name" -> {
                 GlobalScope.launch(Dispatchers.IO) {
                     fireStoreReference.update("userName", newInfo).await()
                     withContext(Dispatchers.Main) {
+                        binding.progressBar.visibility = View.INVISIBLE
                         getUserInfo()
                     }
                 }
@@ -164,6 +169,7 @@ class ProfileActivity : AppCompatActivity() {
                 GlobalScope.launch(Dispatchers.IO) {
                     fireStoreReference.update("bio", newInfo).await()
                     withContext(Dispatchers.Main) {
+                        binding.progressBar.visibility = View.INVISIBLE
                         getUserInfo()
                     }
                 }
@@ -178,12 +184,21 @@ class ProfileActivity : AppCompatActivity() {
                     cloudReference.putFile(imageUri).addOnSuccessListener {
                         cloudReference.downloadUrl.addOnSuccessListener { uri ->
                             firestore.collection("Users").document(firebaseUser.uid)
-                                .update("profileImage", uri.toString()).addOnSuccessListener {
-                                    getUserInfo()
-                                }.addOnFailureListener {
+                                .update("profileImage", uri.toString()).addOnCompleteListener {
+                                    binding.image.setImageBitmap(when {
+                                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> ImageDecoder.decodeBitmap(
+                                            ImageDecoder.createSource(this.contentResolver,
+                                                imageUri))
+
+                                        else -> MediaStore.Images.Media.getBitmap(this.contentResolver,
+                                            imageUri)
+                                    })
+                                    binding.progressBar.visibility = View.INVISIBLE
                                     Snackbar.make(findViewById(android.R.id.content),
-                                        "Something went wrong.",
+                                        "Profile Uploaded.",
                                         Snackbar.LENGTH_SHORT).show()
+                                }.addOnCanceledListener {
+                                    binding.progressBar.visibility = View.INVISIBLE
                                 }
                         }
                     }
@@ -197,15 +212,6 @@ class ProfileActivity : AppCompatActivity() {
 
         val imageUri: Uri? = data?.data
         if (requestCode == openGallery && resultCode == RESULT_OK && data != null && imageUri != null) {
-
-            val bitmap = when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> ImageDecoder.decodeBitmap(
-                    ImageDecoder.createSource(this.contentResolver,
-                        imageUri))
-
-                else -> MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
-            }
-            binding.image.setImageBitmap(bitmap)
             updateInfo("Image", null, imageUri)
         } else {
             Snackbar.make(findViewById(android.R.id.content),

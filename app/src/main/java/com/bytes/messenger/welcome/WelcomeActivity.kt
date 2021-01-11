@@ -15,6 +15,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         binding.nextButton.setOnClickListener {
             startActivity(Intent(this@WelcomeActivity, PhoneLoginActivity::class.java))
+            finish()
         }
     }
 }

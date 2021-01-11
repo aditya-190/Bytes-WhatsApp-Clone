@@ -8,22 +8,21 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bytes.messenger.R
 import com.bytes.messenger.model.Message
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 class MessageAdapter(
-    private var messageList: ArrayList<Message>,
+    private var messageList: MutableList<Message>,
     private var context: Context,
 ) : RecyclerView.Adapter<MessageAdapter.MessageListViewHolder>() {
 
-    private val MESSAGE_LEFT = 0
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageListViewHolder {
         return MessageListViewHolder(
-            if(viewType == MESSAGE_LEFT) {
+            if (viewType == 1) {
                 LayoutInflater.from(context).inflate(R.layout.single_message_left, parent, false)
-            }
-        else {
+            } else {
                 LayoutInflater.from(context).inflate(R.layout.single_message_right, parent, false)
-        }
+            }
         )
     }
 
@@ -34,6 +33,13 @@ class MessageAdapter(
 
     override fun getItemCount(): Int {
         return messageList.size
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (messageList[position].sender == FirebaseAuth.getInstance().currentUser!!.uid)
+            0
+        else
+            1
     }
 
     class MessageListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
