@@ -1,5 +1,6 @@
 package com.bytes.messenger.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -86,21 +87,32 @@ class MessageActivity : AppCompatActivity() {
             }
         }
 
+        binding.image.setOnClickListener {
+            startActivity(Intent(this@MessageActivity, ReceiverProfileActivity::class.java).also {
+                it.putExtra("userID", receiverID)
+                it.putExtra("userName", receiverName)
+                it.putExtra("userImage", userImage)
+                it.putExtra("lastSeen", lastSeen)
+            })
+            finish()
+        }
+
         binding.backButton.setOnClickListener {
             onBackPressed()
         }
     }
 
     private fun readMessages() {
-        senderMessageDb.document(currentUser.uid).collection(receiverID).addSnapshotListener { value, _ ->
-            if (value != null) {
-                for (dc in value.documentChanges) {
-                    messageList.add(dc.document.toObject(Message::class.java))
+        senderMessageDb.document(currentUser.uid).collection("Messages").document(receiverID)
+            .collection("AllUserMessages").addSnapshotListener { value, _ ->
+                if (value != null) {
+                    for (dc in value.documentChanges) {
+                        messageList.add(dc.document.toObject(Message::class.java))
+                    }
+                    adapter.notifyDataSetChanged()
+                    binding.recycler.adapter = MessageAdapter(messageList, this)
                 }
-                adapter.notifyDataSetChanged()
-                binding.recycler.adapter = MessageAdapter(messageList, this)
             }
-        }
     }
 
     private fun sendMessage(
@@ -117,8 +129,19 @@ class MessageActivity : AppCompatActivity() {
             type, image, voiceDuration, voiceMessage)
 
         GlobalScope.launch(Dispatchers.IO) {
-            senderMessageDb.document(currentUser.uid).collection(receiverID).add(sendMsg).await()
-            receiverMessageDb.document(receiverID).collection(currentUser.uid).add(sendMsg).await()
+            senderMessageDb.document(currentUser.uid).collection("Messages").document(receiverID)
+                .collection("AllUserMessages").add(sendMsg).await()
+
+            senderMessageDb.document(currentUser.uid).collection("ChatList").document(receiverID)
+                .set(hashMapOf("userID" to receiverID))
+                .await()
+
+            receiverMessageDb.document(receiverID).collection("Messages").document(currentUser.uid)
+                .collection("AllUserMessages").add(sendMsg).await()
+
+            receiverMessageDb.document(receiverID).collection("ChatList").document(currentUser.uid)
+                .set(hashMapOf("userID" to currentUser.uid))
+                .await()
         }
     }
 }
