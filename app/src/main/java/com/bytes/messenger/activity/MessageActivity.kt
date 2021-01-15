@@ -77,7 +77,7 @@ class MessageActivity : AppCompatActivity() {
 
         binding.sendButton.setOnClickListener {
             if (binding.message.text.toString().trim().isNotEmpty()) {
-                sendMessage(binding.message.text.toString(), "Text")
+                sendMessage(binding.message.text.trim().toString(), "Text")
                 binding.message.text.clear()
             }
         }
