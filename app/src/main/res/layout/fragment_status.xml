@@ -22,7 +22,7 @@
         app:layout_constraintGuide_percent="0.20" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/single_user_status_container"
+        android:id="@+id/status_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:elevation="0dp"
@@ -34,7 +34,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/user_status"
+            android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/content_description_user_image"
@@ -45,15 +45,17 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/add_background"
+        android:backgroundTint="@color/white"
         android:contentDescription="@string/content_description_add_status"
-        android:elevation="10dp"
+        android:elevation="0dp"
         android:scaleType="center"
         android:src="@drawable/icon_add"
-        app:layout_constraintBottom_toBottomOf="@id/single_user_status_container"
-        app:layout_constraintEnd_toEndOf="@id/single_user_status_container" />
+        app:layout_constraintBottom_toBottomOf="@id/status_container"
+        app:layout_constraintEnd_toEndOf="@id/status_container" />
 
     <TextView
-        android:id="@+id/my_status_text"
+        android:id="@+id/text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -63,11 +65,11 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/single_user_status_container"
-        app:layout_constraintTop_toTopOf="@id/single_user_status_container" />
+        app:layout_constraintStart_toEndOf="@id/status_container"
+        app:layout_constraintTop_toTopOf="@id/status_container" />
 
     <TextView
-        android:id="@+id/status_description_text"
+        android:id="@+id/description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -76,6 +78,6 @@
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/single_user_status_container"
-        app:layout_constraintTop_toBottomOf="@id/my_status_text" />
+        app:layout_constraintStart_toEndOf="@id/status_container"
+        app:layout_constraintTop_toBottomOf="@id/text" />
 </androidx.constraintlayout.widget.ConstraintLayout>

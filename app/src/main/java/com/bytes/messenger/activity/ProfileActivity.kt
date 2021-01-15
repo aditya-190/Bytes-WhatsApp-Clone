@@ -8,13 +8,13 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.InputType
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.bytes.messenger.FirebaseServices
 import com.bytes.messenger.R
 import com.bytes.messenger.databinding.ActivityProfileBinding
 import com.bytes.messenger.databinding.ChangeProfileInfoBinding
@@ -22,23 +22,14 @@ import com.bytes.messenger.welcome.WelcomeActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
-    private lateinit var firebaseUser: FirebaseUser
-    private lateinit var firestore: FirebaseFirestore
-    private lateinit var fireStoreReference: DocumentReference
     private lateinit var bottomSheet: BottomSheetBehavior<LinearLayout>
     private val openGallery = 1
 
@@ -53,9 +44,6 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun initialise() {
-        firestore = FirebaseFirestore.getInstance()
-        firebaseUser = FirebaseAuth.getInstance().currentUser!!
-        fireStoreReference = firestore.collection("Users").document(firebaseUser.uid)
         bottomSheet = BottomSheetBehavior.from(binding.profilePicker)
     }
 
@@ -140,66 +128,66 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun getUserInfo() {
         GlobalScope.launch(Dispatchers.IO) {
-            val it = fireStoreReference.get().await()
-            withContext(Dispatchers.Main) {
-                binding.name.text = it.get("userName").toString()
-                binding.bio.text = it.get("bio").toString()
-                binding.number.text = it.get("userPhone").toString()
 
-                val imageUrl = it.get("profileImage").toString()
-                if (imageUrl.isNotEmpty()) Glide.with(applicationContext).load(imageUrl)
-                    .into(binding.image)
+            val userInfo = FirebaseServices.getUserInfo()
+
+            withContext(Dispatchers.Main) {
+
+                if (userInfo != null) {
+                    binding.name.text = userInfo.get("userName").toString()
+                    binding.bio.text = userInfo.get("bio").toString()
+                    binding.number.text = userInfo.get("userPhone").toString()
+
+                    val imageUrl = userInfo.get("profileImage").toString()
+                    if (imageUrl.isNotEmpty()) Glide.with(applicationContext).load(imageUrl)
+                        .into(binding.image)
+                }
             }
         }
     }
 
     private fun updateInfo(type: String, newInfo: String?, imageUri: Uri?) {
         binding.progressBar.visibility = View.VISIBLE
+
         when (type) {
             "Name" -> {
                 GlobalScope.launch(Dispatchers.IO) {
-                    fireStoreReference.update("userName", newInfo).await()
+                    FirebaseServices.update("userName", newInfo)
                     withContext(Dispatchers.Main) {
                         binding.progressBar.visibility = View.INVISIBLE
                         getUserInfo()
                     }
                 }
             }
+
             "Bio" -> {
                 GlobalScope.launch(Dispatchers.IO) {
-                    fireStoreReference.update("bio", newInfo).await()
+                    FirebaseServices.update("bio", newInfo)
                     withContext(Dispatchers.Main) {
                         binding.progressBar.visibility = View.INVISIBLE
                         getUserInfo()
                     }
                 }
-
             }
+
             "PhoneNumber" -> {
             }
+
             "Image" -> {
                 if (imageUri != null) {
-                    val cloudReference: StorageReference =
-                        FirebaseStorage.getInstance().reference.child("Profiles/${binding.number.text}-${firebaseUser.uid}")
-                    cloudReference.putFile(imageUri).addOnSuccessListener {
-                        cloudReference.downloadUrl.addOnSuccessListener { uri ->
-                            firestore.collection("Users").document(firebaseUser.uid)
-                                .update("profileImage", uri.toString()).addOnCompleteListener {
-                                    binding.image.setImageBitmap(when {
-                                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> ImageDecoder.decodeBitmap(
-                                            ImageDecoder.createSource(this.contentResolver,
-                                                imageUri))
+                    GlobalScope.launch(Dispatchers.IO) {
+                        val uri =
+                            FirebaseServices.storeImage(binding.number.text.toString(), imageUri)
+                        FirebaseServices.update("profileImage", uri.toString())
 
-                                        else -> MediaStore.Images.Media.getBitmap(this.contentResolver,
-                                            imageUri)
-                                    })
-                                    binding.progressBar.visibility = View.INVISIBLE
-                                    Snackbar.make(findViewById(android.R.id.content),
-                                        "Profile Uploaded.",
-                                        Snackbar.LENGTH_SHORT).show()
-                                }.addOnCanceledListener {
-                                    binding.progressBar.visibility = View.INVISIBLE
-                                }
+                        withContext(Dispatchers.Main) {
+                            binding.progressBar.visibility = View.INVISIBLE
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                binding.image.setImageBitmap(ImageDecoder.decodeBitmap(
+                                    ImageDecoder.createSource(this@ProfileActivity.contentResolver,
+                                        imageUri)))
+                            }
                         }
                     }
                 }

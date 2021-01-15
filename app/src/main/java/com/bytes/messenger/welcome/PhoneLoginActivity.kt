@@ -12,7 +12,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
-import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
 
 
@@ -21,8 +20,6 @@ import java.util.concurrent.TimeUnit
 
 class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: FirebaseFirestore
     private val countryNamesArray = arrayOf(
         "Afghanistan", "Albania",
         "Algeria", "Andorra", "Angola", "Antarctica", "Argentina",
@@ -109,8 +106,6 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
     }
 
     private fun initialise() {
-        auth = FirebaseAuth.getInstance()
-        database = FirebaseFirestore.getInstance()
         currentLayout = "PHONE_SECTION"
         val adapter =
             ArrayAdapter(this, android.R.layout.simple_spinner_item, countryNamesArray).also {
@@ -177,7 +172,7 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
         number = binding.phoneNumber.text.toString()
 
         PhoneAuthProvider.verifyPhoneNumber(
-            PhoneAuthOptions.newBuilder(auth)
+            PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
                 .setPhoneNumber(String.format("%s%s", code, number))
                 .setTimeout(60L, TimeUnit.SECONDS)
                 .setActivity(this)
@@ -223,7 +218,7 @@ class PhoneLoginActivity : AppCompatActivity(), AdapterView.OnItemSelectedListen
     private fun signIn() {
         val credentials: PhoneAuthCredential =
             PhoneAuthProvider.getCredential(verificationID, binding.otpCode.text.toString())
-        auth.signInWithCredential(credentials).addOnCompleteListener { task ->
+        FirebaseAuth.getInstance().signInWithCredential(credentials).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 binding.progressBar.visibility = View.INVISIBLE
                 val user: FirebaseUser? = task.result?.user

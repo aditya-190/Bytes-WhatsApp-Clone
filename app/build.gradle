@@ -59,6 +59,7 @@ dependencies {
     // Firebase Essentials
     implementation 'com.google.firebase:firebase-auth:20.0.1'
     implementation 'com.google.firebase:firebase-firestore:22.0.1'
+    implementation "com.firebaseui:firebase-ui-firestore:3.0.0"
     implementation 'com.google.firebase:firebase-storage:19.2.1'
 
     // Kotlin Coroutines

@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Bytes">
-        <activity android:name=".activity.ReceiverProfileActivity"></activity>
+        <activity android:name=".activity.ReceiverProfileActivity"/>
         <activity android:name=".activity.MessageActivity" />
         <activity
             android:name=".activity.ContactsActivity"

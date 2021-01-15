@@ -8,23 +8,20 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bytes.messenger.FirebaseServices
 import com.bytes.messenger.R
 import com.bytes.messenger.adapter.MessageAdapter
 import com.bytes.messenger.databinding.ActivityMessageBinding
 import com.bytes.messenger.model.Message
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 
 class MessageActivity : AppCompatActivity() {
     private lateinit var currentUser: FirebaseUser
-    private lateinit var senderMessageDb: CollectionReference
-    private lateinit var receiverMessageDb: CollectionReference
     private lateinit var binding: ActivityMessageBinding
     private lateinit var receiverID: String
     private lateinit var lastSeen: String
@@ -44,9 +41,7 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun initialise() {
-        currentUser = FirebaseAuth.getInstance().currentUser!!
-        senderMessageDb = FirebaseFirestore.getInstance().collection("Messages")
-        receiverMessageDb = FirebaseFirestore.getInstance().collection("Messages")
+        currentUser = FirebaseServices.currentUser!!
         receiverName = intent.getStringExtra("userName").toString()
         lastSeen = intent.getStringExtra("userLastSeen").toString()
         userImage = intent.getStringExtra("userImage").toString()
@@ -103,8 +98,9 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun readMessages() {
-        senderMessageDb.document(currentUser.uid).collection("Messages").document(receiverID)
-            .collection("AllUserMessages").addSnapshotListener { value, _ ->
+        FirebaseServices.messagesDb.document(FirebaseServices.currentUser!!.uid)
+            .collection("Messages").document(receiverID)
+            .collection("AllUserMessages").orderBy("time").addSnapshotListener { value, _ ->
                 if (value != null) {
                     for (dc in value.documentChanges) {
                         messageList.add(dc.document.toObject(Message::class.java))
@@ -129,19 +125,7 @@ class MessageActivity : AppCompatActivity() {
             type, image, voiceDuration, voiceMessage)
 
         GlobalScope.launch(Dispatchers.IO) {
-            senderMessageDb.document(currentUser.uid).collection("Messages").document(receiverID)
-                .collection("AllUserMessages").add(sendMsg).await()
-
-            senderMessageDb.document(currentUser.uid).collection("ChatList").document(receiverID)
-                .set(hashMapOf("userID" to receiverID))
-                .await()
-
-            receiverMessageDb.document(receiverID).collection("Messages").document(currentUser.uid)
-                .collection("AllUserMessages").add(sendMsg).await()
-
-            receiverMessageDb.document(receiverID).collection("ChatList").document(currentUser.uid)
-                .set(hashMapOf("userID" to currentUser.uid))
-                .await()
+            FirebaseServices.sendMsg(receiverID, sendMsg)
         }
     }
 }

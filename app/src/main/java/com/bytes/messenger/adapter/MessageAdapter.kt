@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bytes.messenger.FirebaseServices
 import com.bytes.messenger.R
 import com.bytes.messenger.model.Message
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 
 class MessageAdapter(
     private var messageList: ArrayList<Message>,
@@ -36,7 +35,7 @@ class MessageAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (messageList[position].sender == FirebaseAuth.getInstance().currentUser!!.uid)
+        return if (messageList[position].sender == FirebaseServices.currentUser!!.uid)
             0
         else
             1

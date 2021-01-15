@@ -4,16 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.bytes.messenger.FirebaseServices
 import com.bytes.messenger.MainActivity
 import com.bytes.messenger.databinding.ActivityUserInfoBinding
 import com.bytes.messenger.model.User
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class UserInfoActivity : AppCompatActivity() {
@@ -27,26 +26,24 @@ class UserInfoActivity : AppCompatActivity() {
 
         binding.nextButton.setOnClickListener {
             if (binding.name.text.trim().toString().isNotEmpty()) {
-                val user = FirebaseAuth.getInstance().currentUser
                 binding.progressBar.visibility = View.VISIBLE
-                if (user != null) {
-                    val newUser = User(
-                        user.uid,
-                        binding.name.text.trim().toString(),
-                        user.phoneNumber!!,
-                        "",
-                        "Hey there! I am using Bytes.",
-                        "",
-                        "")
 
-                    GlobalScope.launch(Dispatchers.IO) {
-                        FirebaseFirestore.getInstance().collection("Users").document(user.uid)
-                            .set(newUser).await()
-                        withContext(Dispatchers.Main) {
-                            binding.progressBar.visibility = View.INVISIBLE
-                            startActivity(Intent(this@UserInfoActivity, MainActivity::class.java))
-                            finish()
-                        }
+                val newUser = User(
+                    FirebaseAuth.getInstance().currentUser!!.uid,
+                    binding.name.text.trim().toString(),
+                    FirebaseAuth.getInstance().currentUser!!.phoneNumber.toString(),
+                    "",
+                    "Hey there! I am using Bytes.",
+                    "",
+                    "")
+
+                GlobalScope.launch(Dispatchers.IO) {
+                    FirebaseServices.addUser(newUser)
+
+                    withContext(Dispatchers.Main) {
+                        binding.progressBar.visibility = View.INVISIBLE
+                        startActivity(Intent(this@UserInfoActivity, MainActivity::class.java))
+                        finish()
                     }
                 }
             } else {
@@ -56,8 +53,5 @@ class UserInfoActivity : AppCompatActivity() {
                     .show()
             }
         }
-    }
-
-    override fun onBackPressed() {
     }
 }
