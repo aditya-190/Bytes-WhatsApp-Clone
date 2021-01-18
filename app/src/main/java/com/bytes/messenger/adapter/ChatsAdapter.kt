@@ -13,6 +13,11 @@ import com.bumptech.glide.Glide
 import com.bytes.messenger.R
 import com.bytes.messenger.activity.MessageActivity
 import com.bytes.messenger.model.ChatList
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class ChatsAdapter(
     private var chatList: ArrayList<ChatList>,
@@ -27,14 +32,30 @@ class ChatsAdapter(
 
     override fun onBindViewHolder(holder: ChatListViewHolder, position: Int) {
         val current: ChatList = chatList[position]
-
         holder.userName.text = current.userName
-        holder.recentMessage.text = current.recentMessage
-        holder.messageTime.text = current.messageTime
 
         val imageUrl = current.userImage
         if (imageUrl.isNotEmpty())
             Glide.with(context).load(imageUrl).centerCrop().into(holder.userImage)
+
+        FirebaseDatabase.getInstance().reference.child("Messages")
+            .child(FirebaseAuth.getInstance().currentUser!!.uid).child("LastMsg")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        holder.recentMessage.text =
+                            snapshot.child("recentMessage").getValue(String::class.java).toString()
+                        holder.messageTime.text =
+                            snapshot.child("recentMsgTime").getValue(String::class.java).toString()
+                    } else {
+                        holder.recentMessage.text = context.getString(R.string.tap_to_chat)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
 
         holder.singleChat.setOnClickListener {
             context.startActivity(Intent(context, MessageActivity::class.java).also {

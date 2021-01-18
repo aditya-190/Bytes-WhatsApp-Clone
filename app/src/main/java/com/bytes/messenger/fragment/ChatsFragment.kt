@@ -6,22 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bytes.messenger.FirebaseServices
 import com.bytes.messenger.adapter.ChatsAdapter
 import com.bytes.messenger.databinding.FragmentChatsBinding
 import com.bytes.messenger.model.ChatList
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+
 
 class ChatsFragment : Fragment() {
 
     private var _binding: FragmentChatsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var chatListArrayDemo: ArrayList<ChatList>
-    private lateinit var adapter: ChatsAdapter
+    private lateinit var chatList: ArrayList<ChatList>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,33 +36,32 @@ class ChatsFragment : Fragment() {
     }
 
     private fun initialise() {
-        chatListArrayDemo = ArrayList()
-        adapter = ChatsAdapter(chatListArrayDemo, context!!)
+        chatList = ArrayList()
         binding.recycler.layoutManager = LinearLayoutManager(context)
+        binding.recycler.adapter = ChatsAdapter(chatList, context!!)
     }
 
     private fun fetchData() {
-        binding.inviteFriend.visibility = View.VISIBLE
-        GlobalScope.launch {
-            val value = FirebaseServices.getChatList()
-            if (value != null) {
-                for (dataChanges in value.documentChanges) {
-                    val userInfo =
-                        FirebaseServices.getUserInfo(dataChanges.document["userID"].toString())
-                    chatListArrayDemo.add(ChatList(userInfo!!["userID"].toString(),
-                        userInfo["userName"].toString(),
-                        "Demo",
-                        "Anything",
-                        userInfo["profileImage"].toString()))
+        FirebaseDatabase.getInstance().reference.child("Users")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    binding.inviteFriend.visibility = View.INVISIBLE
+                    chatList.clear()
+                    for (data in snapshot.children) {
+                        val usersID = data.child("userID").getValue(String::class.java)
+                        val usersName = data.child("userName").getValue(String::class.java)
+                        val usersImage = data.child("profileImage").getValue(String::class.java)
 
-                    withContext(Dispatchers.Main) {
-                        binding.inviteFriend.visibility = View.INVISIBLE
-                        adapter.notifyDataSetChanged()
-                        binding.recycler.adapter = ChatsAdapter(chatListArrayDemo, context!!)
+                        if (usersID != FirebaseAuth.getInstance().currentUser!!.uid) {
+                            chatList.add(ChatList(userID = usersID.toString(),
+                                userName = usersName.toString(), userImage = usersImage.toString()))
+                        }
                     }
+                    binding.recycler.adapter?.notifyDataSetChanged()
                 }
-            }
-        }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
 
     override fun onDestroyView() {

@@ -14,18 +14,19 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.bytes.messenger.FirebaseServices
 import com.bytes.messenger.R
 import com.bytes.messenger.databinding.ActivityProfileBinding
 import com.bytes.messenger.databinding.ChangeProfileInfoBinding
+import com.bytes.messenger.model.User
 import com.bytes.messenger.welcome.WelcomeActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 
 
 class ProfileActivity : AppCompatActivity() {
@@ -38,13 +39,9 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initialise()
+        bottomSheet = BottomSheetBehavior.from(binding.profilePicker)
         getUserInfo()
         clickListeners()
-    }
-
-    private fun initialise() {
-        bottomSheet = BottomSheetBehavior.from(binding.profilePicker)
     }
 
     private fun clickListeners() {
@@ -67,7 +64,7 @@ class ProfileActivity : AppCompatActivity() {
 
                 dialogBinding.saveButton.setOnClickListener {
                     if (newInfo.text.trim().toString().isNotEmpty())
-                        updateInfo("Name", newInfo.text.trim().toString(), null)
+                        updateInfo("userName", newInfo.text.trim().toString(), null)
                     dialog.dismiss()
                 }
                 dialog.show()
@@ -91,7 +88,7 @@ class ProfileActivity : AppCompatActivity() {
 
                 dialogBinding.saveButton.setOnClickListener {
                     if (newInfo.text.trim().toString().isNotEmpty())
-                        updateInfo("Bio", newInfo.text.trim().toString(), null)
+                        updateInfo("bio", newInfo.text.trim().toString(), null)
                     dialog.dismiss()
                 }
                 dialog.show()
@@ -107,7 +104,6 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(Intent(this@ProfileActivity, WelcomeActivity::class.java))
             finish()
         }
-
         binding.galleryPicker.setOnClickListener {
             Intent().also {
                 it.type = "image/*"
@@ -117,7 +113,6 @@ class ProfileActivity : AppCompatActivity() {
             }
             bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-
         binding.change.setOnClickListener {
             if (bottomSheet.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -127,66 +122,59 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun getUserInfo() {
-        GlobalScope.launch(Dispatchers.IO) {
-
-            val userInfo = FirebaseServices.getUserInfo()
-
-            withContext(Dispatchers.Main) {
-
-                if (userInfo != null) {
-                    binding.name.text = userInfo.get("userName").toString()
-                    binding.bio.text = userInfo.get("bio").toString()
-                    binding.number.text = userInfo.get("userPhone").toString()
-
-                    val imageUrl = userInfo.get("profileImage").toString()
-                    if (imageUrl.isNotEmpty()) Glide.with(applicationContext).load(imageUrl)
-                        .into(binding.image)
+        FirebaseDatabase.getInstance().reference.child("Users")
+            .child(FirebaseAuth.getInstance().currentUser!!.uid)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val userInfo: User? = snapshot.getValue(User::class.java)
+                    if (userInfo != null) {
+                        binding.name.text = userInfo.userName
+                        binding.bio.text = userInfo.bio
+                        binding.number.text = userInfo.userPhone
+                        val imageUrl = userInfo.profileImage
+                        if (imageUrl.isNotEmpty()) Glide.with(applicationContext).load(imageUrl)
+                            .into(binding.image)
+                    }
                 }
-            }
-        }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
 
     private fun updateInfo(type: String, newInfo: String?, imageUri: Uri?) {
         binding.progressBar.visibility = View.VISIBLE
 
-        when (type) {
-            "Name" -> {
-                GlobalScope.launch(Dispatchers.IO) {
-                    FirebaseServices.update("userName", newInfo)
-                    withContext(Dispatchers.Main) {
-                        binding.progressBar.visibility = View.INVISIBLE
-                        getUserInfo()
-                    }
-                }
-            }
+        val updates = hashMapOf(
+            type to (newInfo) as Any
+        )
 
-            "Bio" -> {
-                GlobalScope.launch(Dispatchers.IO) {
-                    FirebaseServices.update("bio", newInfo)
-                    withContext(Dispatchers.Main) {
-                        binding.progressBar.visibility = View.INVISIBLE
-                        getUserInfo()
-                    }
-                }
+        when (type) {
+            "userName, bio" -> {
+                FirebaseDatabase.getInstance().reference.child("Users")
+                    .child(FirebaseAuth.getInstance().currentUser!!.uid).updateChildren(updates)
+                binding.progressBar.visibility = View.INVISIBLE
             }
 
             "PhoneNumber" -> {
             }
 
-            "Image" -> {
+            "profileImage" -> {
                 if (imageUri != null) {
-                    GlobalScope.launch(Dispatchers.IO) {
-                        val uri =
-                            FirebaseServices.storeImage(binding.number.text.toString(), imageUri)
-                        FirebaseServices.update("profileImage", uri.toString())
+                    val imageHolder =
+                        FirebaseStorage.getInstance().reference.child("Profiles/${binding.number.text}-${FirebaseAuth.getInstance().currentUser!!.uid}")
+                    imageHolder.putFile(imageUri).addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            imageHolder.downloadUrl.addOnSuccessListener { uri ->
+                                FirebaseDatabase.getInstance().reference.child("Users")
+                                    .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                                    .updateChildren(hashMapOf("profileImage" to (uri.toString()) as Any))
 
-                        withContext(Dispatchers.Main) {
-                            binding.progressBar.visibility = View.INVISIBLE
-
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                binding.image.setImageBitmap(ImageDecoder.decodeBitmap(
-                                    ImageDecoder.createSource(this@ProfileActivity.contentResolver,
-                                        imageUri)))
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                    binding.image.setImageBitmap(ImageDecoder.decodeBitmap(
+                                        ImageDecoder.createSource(this@ProfileActivity.contentResolver,
+                                            imageUri)))
+                                }
+                                binding.progressBar.visibility = View.INVISIBLE
                             }
                         }
                     }
@@ -200,7 +188,7 @@ class ProfileActivity : AppCompatActivity() {
 
         val imageUri: Uri? = data?.data
         if (requestCode == openGallery && resultCode == RESULT_OK && data != null && imageUri != null) {
-            updateInfo("Image", null, imageUri)
+            updateInfo("profileImage", null, imageUri)
         } else {
             Snackbar.make(findViewById(android.R.id.content),
                 "No Photo Selected.",

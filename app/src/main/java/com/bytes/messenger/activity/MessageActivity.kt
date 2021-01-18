@@ -8,27 +8,30 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bytes.messenger.FirebaseServices
 import com.bytes.messenger.R
 import com.bytes.messenger.adapter.MessageAdapter
 import com.bytes.messenger.databinding.ActivityMessageBinding
 import com.bytes.messenger.model.Message
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MessageActivity : AppCompatActivity() {
-    private lateinit var currentUser: FirebaseUser
     private lateinit var binding: ActivityMessageBinding
     private lateinit var receiverID: String
     private lateinit var lastSeen: String
     private lateinit var receiverName: String
     private lateinit var userImage: String
+    private lateinit var senderMsgReference: String
+    private lateinit var receiverMsgReference: String
     private lateinit var messageList: ArrayList<Message>
-    private lateinit var adapter: MessageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +44,6 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun initialise() {
-        currentUser = FirebaseServices.currentUser!!
         receiverName = intent.getStringExtra("userName").toString()
         lastSeen = intent.getStringExtra("userLastSeen").toString()
         userImage = intent.getStringExtra("userImage").toString()
@@ -49,16 +51,19 @@ class MessageActivity : AppCompatActivity() {
         binding.name.text = receiverName
         binding.lastSeen.text = lastSeen
         messageList = ArrayList()
-        adapter = MessageAdapter(messageList, this)
+        senderMsgReference = FirebaseAuth.getInstance().currentUser!!.uid
+        receiverMsgReference = receiverID
 
         if (userImage.isNotEmpty())
             Glide.with(applicationContext).load(userImage).into(binding.image)
 
-        binding.recycler.layoutManager =
-            LinearLayoutManager(this@MessageActivity).also { layout ->
+        binding.recycler.also {
+            it.layoutManager = LinearLayoutManager(this@MessageActivity).also { layout ->
                 layout.orientation = RecyclerView.VERTICAL
                 layout.stackFromEnd = true
             }
+            it.adapter = MessageAdapter(messageList, this, senderMsgReference, receiverMsgReference)
+        }
     }
 
     private fun clickListeners() {
@@ -77,7 +82,7 @@ class MessageActivity : AppCompatActivity() {
 
         binding.sendButton.setOnClickListener {
             if (binding.message.text.toString().trim().isNotEmpty()) {
-                sendMessage(binding.message.text.trim().toString(), "Text")
+                sendMessage(message = binding.message.text.trim().toString(), type = "Text")
                 binding.message.text.clear()
             }
         }
@@ -98,34 +103,69 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun readMessages() {
-        FirebaseServices.messagesDb.document(FirebaseServices.currentUser!!.uid)
-            .collection("Messages").document(receiverID)
-            .collection("AllUserMessages").orderBy("time").addSnapshotListener { value, _ ->
-                if (value != null) {
-                    for (dc in value.documentChanges) {
-                        messageList.add(dc.document.toObject(Message::class.java))
+        FirebaseDatabase.getInstance().reference.child("Messages")
+            .child(senderMsgReference).child("All")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    messageList.clear()
+                    for (data in snapshot.children) {
+                        val message: Message? = data.getValue(Message::class.java)
+                        if (message != null) {
+                            message.id = data.key.toString()
+                            messageList.add(message)
+                        }
                     }
-                    adapter.notifyDataSetChanged()
-                    binding.recycler.adapter = MessageAdapter(messageList, this)
+                    binding.recycler.adapter?.notifyDataSetChanged()
+                    binding.recycler.smoothScrollToPosition(messageList.size)
                 }
-            }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
     }
 
     private fun sendMessage(
+        messageID: String = "",
         message: String,
         type: String,
         image: String = "",
         voiceDuration: String = "",
         voiceMessage: String = "",
+        feelings: Int = -1,
     ) {
-        val sendMsg = Message(currentUser.uid,
-            receiverID,
-            message,
-            System.currentTimeMillis().toString(),
-            type, image, voiceDuration, voiceMessage)
+        val getTime =
+            SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date().time).toString()
+                .replace("am", "AM").replace("pm", "PM")
 
-        GlobalScope.launch(Dispatchers.IO) {
-            FirebaseServices.sendMsg(receiverID, sendMsg)
-        }
+        val sendMsg = Message(id = messageID, sender = FirebaseAuth.getInstance().currentUser!!.uid,
+            receiver = receiverID,
+            message = message,
+            time = getTime,
+            type = type,
+            imageUrl = image,
+            voiceDuration = voiceDuration,
+            voiceMessage = voiceMessage,
+            feelings = feelings)
+
+        val messageKey: String = FirebaseDatabase.getInstance().reference.push().key.toString()
+
+        val recentMsg = hashMapOf(
+            "recentMessage" to (message) as Any,
+            "recentMsgTime" to (getTime) as Any,
+        )
+
+        FirebaseDatabase.getInstance().reference.child("Messages")
+            .child(senderMsgReference).child("LastMsg").updateChildren(recentMsg)
+            .addOnSuccessListener {
+                FirebaseDatabase.getInstance().reference.child("Messages")
+                    .child(receiverMsgReference).child("LastMsg").updateChildren(recentMsg)
+            }
+
+        FirebaseDatabase.getInstance().reference.child("Messages")
+            .child(senderMsgReference).child("All").child(messageKey).setValue(sendMsg)
+            .addOnSuccessListener {
+                FirebaseDatabase.getInstance().reference.child("Messages")
+                    .child(receiverMsgReference).child("All").child(messageKey).setValue(sendMsg)
+            }
     }
 }

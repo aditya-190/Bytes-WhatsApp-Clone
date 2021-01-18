@@ -45,6 +45,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.firebase:firebase-database:19.6.0'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -55,6 +56,9 @@ dependencies {
 
     // GIF Loader for Progress Bar Loader
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
+
+    // Reactions on Messages
+    implementation "com.github.pgreze:android-reactions:1.3"
 
     // Firebase Essentials
     implementation 'com.google.firebase:firebase-auth:20.0.1'

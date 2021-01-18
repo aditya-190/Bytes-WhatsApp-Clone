@@ -60,6 +60,7 @@
     <string name="invite_subheading">None of your contacts are using Byte Messenger. Invite them using below Button.</string>
     <string name="refer_and_earn">Refer and Earn</string>
     <string name="invite_a_friend">Invite a Friend</string>
+    <string name="tap_to_chat">Tap to chat</string>
 
     <!-- Call Fragment -->
     <string name="place_call">To place a Byte voice or video call, tap 📞 button and select a contact.</string>

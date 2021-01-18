@@ -4,20 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.bytes.messenger.FirebaseServices
 import com.bytes.messenger.MainActivity
 import com.bytes.messenger.databinding.ActivityUserInfoBinding
 import com.bytes.messenger.model.User
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.google.firebase.database.FirebaseDatabase
 
 class UserInfoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityUserInfoBinding
+    private val currentUser = FirebaseAuth.getInstance().currentUser!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,28 +25,23 @@ class UserInfoActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.VISIBLE
 
                 val newUser = User(
-                    FirebaseAuth.getInstance().currentUser!!.uid,
+                    currentUser.uid,
                     binding.name.text.trim().toString(),
-                    FirebaseAuth.getInstance().currentUser!!.phoneNumber.toString(),
+                    currentUser.phoneNumber.toString(),
                     "",
                     "Hey there! I am using Bytes.",
                     "",
                     "")
 
-                GlobalScope.launch(Dispatchers.IO) {
-                    FirebaseServices.addUser(newUser)
-
-                    withContext(Dispatchers.Main) {
+                FirebaseDatabase.getInstance().reference.child("Users")
+                    .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                    .setValue(newUser).addOnSuccessListener {
                         binding.progressBar.visibility = View.INVISIBLE
                         startActivity(Intent(this@UserInfoActivity, MainActivity::class.java))
                         finish()
                     }
-                }
             } else {
-                Snackbar.make(findViewById(android.R.id.content),
-                    "Please enter your name.",
-                    Snackbar.LENGTH_SHORT)
-                    .show()
+                binding.name.error = "Please type a name"
             }
         }
     }

@@ -6,8 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.bytes.messenger.FirebaseServices
 import com.bytes.messenger.databinding.FragmentStatusBinding
+import com.bytes.messenger.model.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.*
 
 class StatusFragment : Fragment() {
@@ -27,12 +32,17 @@ class StatusFragment : Fragment() {
     }
 
     private fun fetchData() {
-        GlobalScope.launch(Dispatchers.IO) {
-            val imageUrl = FirebaseServices.getUserInfo()?.get("profileImage").toString()
-            withContext(Dispatchers.Main) {
-                if (imageUrl.isNotEmpty()) Glide.with(this@StatusFragment).load(imageUrl)
-                    .into(binding.image)
-            }
-        }
+        FirebaseDatabase.getInstance().reference.child("Users")
+            .child(FirebaseAuth.getInstance().currentUser!!.uid)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val imageUrl = snapshot.getValue(User::class.java)?.profileImage
+                    if (imageUrl != null) {
+                        if (imageUrl.isNotEmpty()) Glide.with(this@StatusFragment).load(imageUrl)
+                            .into(binding.image)
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
 }
