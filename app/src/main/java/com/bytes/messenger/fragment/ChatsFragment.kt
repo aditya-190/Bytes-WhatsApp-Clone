@@ -45,7 +45,6 @@ class ChatsFragment : Fragment() {
         FirebaseDatabase.getInstance().reference.child("Users")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    binding.inviteFriend.visibility = View.INVISIBLE
                     chatList.clear()
                     for (data in snapshot.children) {
                         val usersID = data.child("userID").getValue(String::class.java)

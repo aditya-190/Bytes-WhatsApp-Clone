@@ -87,6 +87,13 @@ class MessageActivity : AppCompatActivity() {
             }
         }
 
+        binding.attachment.setOnClickListener {
+            if (binding.attachmentMenu.visibility == View.VISIBLE)
+                binding.attachmentMenu.visibility = View.GONE
+            else
+                binding.attachmentMenu.visibility = View.VISIBLE
+        }
+
         binding.image.setOnClickListener {
             startActivity(Intent(this@MessageActivity, ReceiverProfileActivity::class.java).also {
                 it.putExtra("userID", receiverID)
