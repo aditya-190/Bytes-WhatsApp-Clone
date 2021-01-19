@@ -94,10 +94,10 @@
         android:layout_marginVertical="8dp"
         android:background="@drawable/round_corners_bg"
         android:elevation="2dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/i1"
+            android:id="@+id/attachment_document"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginTop="16dp"
@@ -105,8 +105,8 @@
             android:elevation="0dp"
             app:cardCornerRadius="60dp"
             app:cardElevation="0dp"
-            app:layout_constraintBottom_toTopOf="@id/i4"
-            app:layout_constraintEnd_toStartOf="@id/i2"
+            app:layout_constraintBottom_toTopOf="@id/attachment_audio"
+            app:layout_constraintEnd_toStartOf="@id/attachment_camera"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -121,16 +121,16 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/i2"
+            android:id="@+id/attachment_camera"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:backgroundTint="@color/colorPrimary"
             android:elevation="0dp"
             app:cardCornerRadius="60dp"
             app:cardElevation="0dp"
-            app:layout_constraintEnd_toStartOf="@id/i3"
-            app:layout_constraintStart_toEndOf="@id/i1"
-            app:layout_constraintTop_toTopOf="@id/i1">
+            app:layout_constraintEnd_toStartOf="@id/attachment_gallery"
+            app:layout_constraintStart_toEndOf="@id/attachment_document"
+            app:layout_constraintTop_toTopOf="@id/attachment_document">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -143,7 +143,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/i3"
+            android:id="@+id/attachment_gallery"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:backgroundTint="@color/colorPrimary"
@@ -151,8 +151,8 @@
             app:cardCornerRadius="60dp"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/i2"
-            app:layout_constraintTop_toTopOf="@id/i2">
+            app:layout_constraintStart_toEndOf="@id/attachment_camera"
+            app:layout_constraintTop_toTopOf="@id/attachment_camera">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -165,7 +165,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/i4"
+            android:id="@+id/attachment_audio"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginTop="16dp"
@@ -175,9 +175,9 @@
             app:cardCornerRadius="60dp"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/i5"
+            app:layout_constraintEnd_toStartOf="@id/attachment_location"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/i1">
+            app:layout_constraintTop_toBottomOf="@id/attachment_document">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -190,16 +190,16 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/i5"
+            android:id="@+id/attachment_location"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:backgroundTint="@color/colorPrimary"
             android:elevation="0dp"
             app:cardCornerRadius="60dp"
             app:cardElevation="0dp"
-            app:layout_constraintEnd_toStartOf="@id/i6"
-            app:layout_constraintStart_toEndOf="@id/i4"
-            app:layout_constraintTop_toTopOf="@id/i4">
+            app:layout_constraintEnd_toStartOf="@id/attachment_numbers"
+            app:layout_constraintStart_toEndOf="@id/attachment_audio"
+            app:layout_constraintTop_toTopOf="@id/attachment_audio">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -212,7 +212,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/i6"
+            android:id="@+id/attachment_numbers"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:backgroundTint="@color/colorPrimary"
@@ -220,8 +220,8 @@
             app:cardCornerRadius="60dp"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/i5"
-            app:layout_constraintTop_toTopOf="@id/i5">
+            app:layout_constraintStart_toEndOf="@id/attachment_location"
+            app:layout_constraintTop_toTopOf="@id/attachment_location">
 
             <ImageView
                 android:layout_width="match_parent"

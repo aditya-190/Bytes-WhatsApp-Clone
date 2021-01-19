@@ -78,7 +78,7 @@ class ProfileActivity : AppCompatActivity() {
                 dialogBinding.changeInfoHeading.text =
                     getString(R.string.bio)
                 val newInfo: EditText = dialogBinding.newInfo.also {
-                    it.hint = "Here goes the Bio..."
+                    it.hint = getString(R.string.enter_bio)
                     it.inputType = InputType.TYPE_TEXT_VARIATION_PHONETIC
                 }
 
