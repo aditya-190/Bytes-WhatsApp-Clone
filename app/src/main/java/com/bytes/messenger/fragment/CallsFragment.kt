@@ -12,15 +12,14 @@ import com.bytes.messenger.model.CallList
 
 class CallsFragment : Fragment() {
 
-    private var _binding: FragmentCallsBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentCallsBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentCallsBinding.inflate(inflater, container, false)
+        binding = FragmentCallsBinding.inflate(inflater, container, false)
         val view = binding.root
         binding.recycler.also {
             it.layoutManager = LinearLayoutManager(context)
@@ -34,10 +33,5 @@ class CallsFragment : Fragment() {
         if (callListArrayDemo.size == 0)
             binding.noCall.visibility = View.VISIBLE
         return callListArrayDemo
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

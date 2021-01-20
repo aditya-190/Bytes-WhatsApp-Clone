@@ -13,4 +13,5 @@
     <color name="extra_extra_light_gray">#F5F8FA</color>
     <color name="white">#FFFFFF</color>
     <color name="red">#FF0800</color>
+    <color name="redDark">#ffb93221</color>
 </resources>

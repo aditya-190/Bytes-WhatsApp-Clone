@@ -17,10 +17,7 @@ import com.google.firebase.database.ValueEventListener
 
 
 class ChatsFragment : Fragment() {
-
-    private var _binding: FragmentChatsBinding? = null
-    private val binding get() = _binding!!
-
+    private lateinit var binding: FragmentChatsBinding
     private lateinit var chatList: ArrayList<ChatList>
 
     override fun onCreateView(
@@ -28,7 +25,7 @@ class ChatsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentChatsBinding.inflate(inflater, container, false)
+        binding = FragmentChatsBinding.inflate(inflater, container, false)
         val view = binding.root
         initialise()
         fetchData()
@@ -50,10 +47,13 @@ class ChatsFragment : Fragment() {
                         val usersID = data.child("userID").getValue(String::class.java)
                         val usersName = data.child("userName").getValue(String::class.java)
                         val usersImage = data.child("profileImage").getValue(String::class.java)
+                        val usersStatus = data.child("status").getValue(String::class.java)
 
                         if (usersID != FirebaseAuth.getInstance().currentUser!!.uid) {
                             chatList.add(ChatList(userID = usersID.toString(),
-                                userName = usersName.toString(), userImage = usersImage.toString()))
+                                userName = usersName.toString(),
+                                userImage = usersImage.toString(),
+                                lastSeen = usersStatus.toString()))
                         }
                     }
                     binding.recycler.adapter?.notifyDataSetChanged()
@@ -61,10 +61,5 @@ class ChatsFragment : Fragment() {
 
                 override fun onCancelled(error: DatabaseError) {}
             })
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

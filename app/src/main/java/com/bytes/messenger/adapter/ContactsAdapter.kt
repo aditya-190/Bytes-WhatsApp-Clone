@@ -10,8 +10,8 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bytes.messenger.activity.MessageActivity
 import com.bytes.messenger.R
+import com.bytes.messenger.activity.MessageActivity
 import com.bytes.messenger.model.Contact
 
 class ContactsAdapter(
@@ -38,11 +38,9 @@ class ContactsAdapter(
             context.startActivity(Intent(context, MessageActivity::class.java).also {
                 it.putExtra("userID", current.contactID)
                 it.putExtra("userName", current.contactName)
-                it.putExtra("userBio", current.contactBio)
+                it.putExtra("userLastSeen", current.contactLastSeen)
                 it.putExtra("userImage", current.contactImage)
-                it.putExtra("userLastSeen", current.lastSeen)
             })
-
         }
     }
 

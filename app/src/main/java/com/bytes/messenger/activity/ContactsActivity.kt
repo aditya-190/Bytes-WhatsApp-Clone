@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bytes.messenger.LastSeen
 import com.bytes.messenger.R
 import com.bytes.messenger.adapter.ContactsAdapter
 import com.bytes.messenger.databinding.ActivityContactsBinding

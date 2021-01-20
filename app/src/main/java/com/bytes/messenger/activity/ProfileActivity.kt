@@ -143,15 +143,20 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun updateInfo(type: String, newInfo: String?, imageUri: Uri?) {
         binding.progressBar.visibility = View.VISIBLE
-
-        val updates = hashMapOf(
-            type to (newInfo) as Any
-        )
-
         when (type) {
-            "userName, bio" -> {
+            "userName" -> {
                 FirebaseDatabase.getInstance().reference.child("Users")
-                    .child(FirebaseAuth.getInstance().currentUser!!.uid).updateChildren(updates)
+                    .child(FirebaseAuth.getInstance().currentUser!!.uid).updateChildren(hashMapOf(
+                        "userName" to (newInfo) as Any
+                    ))
+                binding.progressBar.visibility = View.INVISIBLE
+            }
+
+            "bio" -> {
+                FirebaseDatabase.getInstance().reference.child("Users")
+                    .child(FirebaseAuth.getInstance().currentUser!!.uid).updateChildren(hashMapOf(
+                        "bio" to (newInfo) as Any
+                    ))
                 binding.progressBar.visibility = View.INVISIBLE
             }
 

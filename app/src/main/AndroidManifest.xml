@@ -11,25 +11,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Bytes">
-
         <activity
             android:name=".activity.ImageProfileActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Bytes.FullScreen" />
-        <activity android:name=".activity.MessageActivity" />
+        <activity
+            android:name=".activity.MessageActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ContactsActivity"
-            android:parentActivityName=".MainActivity" />
-
-        <activity android:name=".activity.ReceiverProfileActivity" />
-        <activity android:name=".activity.ProfileActivity" />
-        <activity android:name=".activity.SettingsActivity" />
-
-        <activity android:name=".welcome.UserInfoActivity" />
-        <activity android:name=".welcome.PhoneLoginActivity" />
-        <activity android:name=".welcome.WelcomeActivity" />
-
-        <activity android:name=".MainActivity" />
-        <activity android:name=".SplashScreen">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ReceiverProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".welcome.UserInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".welcome.PhoneLoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".welcome.WelcomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SplashScreen"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

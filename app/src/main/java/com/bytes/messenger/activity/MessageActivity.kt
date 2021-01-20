@@ -36,7 +36,6 @@ class MessageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMessageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         initialise()
         clickListeners()
         readMessages()
@@ -48,7 +47,11 @@ class MessageActivity : AppCompatActivity() {
         userImage = intent.getStringExtra("userImage").toString()
         receiverID = intent.getStringExtra("userID").toString()
         binding.name.text = receiverName
-        binding.lastSeen.text = lastSeen
+
+        if (lastSeen == "Online")
+            binding.lastSeen.text = lastSeen
+        else binding.lastSeen.text = timeChanger(lastSeen.toLong())
+
         messageList = ArrayList()
         senderMsgReference = FirebaseAuth.getInstance().currentUser!!.uid
         receiverMsgReference = receiverID
@@ -94,12 +97,13 @@ class MessageActivity : AppCompatActivity() {
         }
 
         binding.image.setOnClickListener {
-            startActivity(Intent(this@MessageActivity, ReceiverProfileActivity::class.java).also {
+            startActivityForResult(Intent(this@MessageActivity,
+                ReceiverProfileActivity::class.java).also {
                 it.putExtra("userID", receiverID)
                 it.putExtra("userName", receiverName)
                 it.putExtra("userImage", userImage)
-                it.putExtra("lastSeen", lastSeen)
-            })
+                it.putExtra("userLastSeen", lastSeen)
+            }, 100)
             finish()
         }
 
@@ -173,5 +177,43 @@ class MessageActivity : AppCompatActivity() {
                 FirebaseDatabase.getInstance().reference.child("Messages")
                     .child(receiverMsgReference).child("All").child(messageKey).setValue(sendMsg)
             }
+    }
+
+    private fun timeChanger(argument: Long): String? {
+        var previous = argument
+        if (previous < 1000000000000L) {
+            previous *= 1000
+        }
+
+        val now = System.currentTimeMillis()
+
+        if (previous > now || previous <= 0) {
+            return null
+        }
+        return when (val difference = now - previous) {
+            in 0..60000 -> "Just now"
+            in 60001..120000 -> "Lst seen a minute ago"
+            in 120001..3000000 -> String.format("%s %d %s",
+                "Last seen",
+                difference / 60000,
+                "minutes ago")
+            in 3000001..5400000 -> "Last seen an hour ago"
+            in 5400001..86400000 -> String.format("%s %d %s",
+                "Last seen",
+                difference / 3600000,
+                "hours ago")
+            in 86400001..172800000 -> "Last seen yesterday"
+            else -> String.format("%s %d %s", "Last seen", difference / 86400000, "days ago")
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == 100 && data != null) {
+            receiverID = data.getStringExtra("userID").toString()
+            receiverName = data.getStringExtra("userName").toString()
+            userImage = data.getStringExtra("userImage").toString()
+            lastSeen = data.getStringExtra("userLastSeen").toString()
+        }
     }
 }

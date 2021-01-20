@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.bumptech.glide.Glide
+import com.bytes.messenger.LastSeen
 import com.bytes.messenger.R
 import com.bytes.messenger.databinding.ActivitySettingsBinding
 import com.bytes.messenger.model.User

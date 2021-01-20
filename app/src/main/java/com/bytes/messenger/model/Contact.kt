@@ -5,5 +5,5 @@ data class Contact(
     var contactName: String = "",
     var contactBio: String = "",
     var contactImage: String = "",
-    var lastSeen: String = "",
+    var contactLastSeen: String = "",
 )

@@ -62,6 +62,7 @@ class ChatsAdapter(
                 it.putExtra("userID", current.userID)
                 it.putExtra("userName", current.userName)
                 it.putExtra("userImage", current.userImage)
+                it.putExtra("userLastSeen", current.lastSeen)
             })
         }
     }

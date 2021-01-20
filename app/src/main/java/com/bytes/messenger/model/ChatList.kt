@@ -6,4 +6,5 @@ data class ChatList(
     var recentMessage: String = "",
     var messageTime: String = "",
     var userImage: String = "",
+    var lastSeen: String = ""
 )

@@ -93,4 +93,10 @@
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="type_message">Type a message</string>
+    <string name="mute_notification">Mute notification</string>
+    <string name="custom_notification">Custom notification</string>
+    <string name="media_visibility">Media visibility</string>
+    <string name="about_and_phone_number">About and phone number</string>
+    <string name="block">Block</string>
+    <string name="report_contact">Report contact</string>
 </resources>
